@@ -13,11 +13,16 @@ const JoinScreen = ({ navigation }) => {
     const [roomId, setRoomId] = useState(null)
     
     function joinRoom() {
-        navigation.navigate('Room', {
-            username: username,
-            roomId: roomId,
+        if(roomId && username){
+            navigation.navigate('Room', {
+                username: username,
+                roomId: roomId,
 
-        });
+            });
+        }
+        else if (!roomId && !username) alert("Fyll i Användarnamn och Lobby-kod")
+        else if (!roomId) alert("Fyll i Lobby-kod")
+        else if (!username) alert("Fyll i Användarnamn")
     }
 
     return (
