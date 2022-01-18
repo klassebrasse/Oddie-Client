@@ -10,14 +10,14 @@ function MyHeader(props) {
       <Header
           ViewComponent={LinearGradient} // Don't forget this!
           linearGradientProps={{
-              colors: [COLORS.SECONDARY,COLORS.PRIMARY ],
+              colors: [props.leftColor, props.rightColor],
               start: {x: 0, y: 0.5},
               end: {x: 1, y: 0.5},
           }}
           leftComponent={
               <View style={styles.headerRight}>
                   <TouchableOpacity onPress={() => props.leftAction()}>
-                      <Ionicons name="arrow-back" color={COLORS.PRIMARY} size={37}/>
+                      <Ionicons name="arrow-back" color={props.rightColor} size={37}/>
                   </TouchableOpacity>
                   <TouchableOpacity
                       style={{marginLeft: 10}}
@@ -26,16 +26,16 @@ function MyHeader(props) {
                   </TouchableOpacity>
               </View>
           }
+
           rightComponent={
               <View style={styles.headerRight}>
-                  <TouchableOpacity>
-                      <Ionicons name="arrow-forward" color={COLORS.SECONDARY} size={37}/>
-                  </TouchableOpacity>
-                  <TouchableOpacity
-                      style={{marginLeft: 10}}
-
-                  >
-                  </TouchableOpacity>
+                  {props.rightAction ? (
+                      <TouchableOpacity onPress={() => props.rightAction()}>
+                          <Ionicons name="arrow-forward" color={props.leftColor} size={37}/>
+                      </TouchableOpacity>
+                  ) : (
+                      <React.Fragment/>
+                  )}
               </View>
           }
           centerComponent={{text: props.title, style: styles.heading}}
