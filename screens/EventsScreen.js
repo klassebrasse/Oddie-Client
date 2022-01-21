@@ -5,7 +5,7 @@ import {COLORS} from "../Constants/Colors";
 const EventsScreen = ({route, navigation}) => {
     return(
         <View style={{flex: 1, backgroundColor: COLORS.BACKGROUND}}>
-            <MyHeader title="Händelser" leftAction={() => navigation.goBack()}  leftColor={COLORS.PRIMARY} rightColor={COLORS.SECONDARY}/>
+            <MyHeader title="Händelser" leftIonIcon="arrow-back" leftAction={() => navigation.goBack()}  leftColor={COLORS.PRIMARY} rightColor={COLORS.SECONDARY}/>
         </View>
     )
 }

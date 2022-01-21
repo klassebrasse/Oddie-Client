@@ -6,11 +6,12 @@ import {COLORS} from "../Constants/Colors";
 import MyHeader from "../Components/MyHeader";
 
 import {Avatar, ListItem} from "react-native-elements";
+import Ionicons from "react-native-vector-icons/Ionicons";
 
 const {width, height} = Dimensions.get('screen')
 
 const RoomScreen = ({route, navigation}) => {
-    const {username, roomId} = route.params;
+    const {username, roomId, color} = route.params;
     const [roomUsers, setRoomUsers] = useState([])
 
     useEffect(() => {
@@ -19,6 +20,10 @@ const RoomScreen = ({route, navigation}) => {
             setRoomUsers([])
         }
     }, []);
+
+    socket.on('users', payload => {
+        setRoomUsers(payload)
+    })
 
     function exitRoom (){
         socket.disconnect()
@@ -31,8 +36,7 @@ const RoomScreen = ({route, navigation}) => {
 
     const list = [
         {
-            name: 'Amy Farha',
-            subtitle: 'Vice President'
+            name: 'Bajsmatta',
         },
         {
             name: 'Chris Jackson',
@@ -44,23 +48,26 @@ const RoomScreen = ({route, navigation}) => {
     const keyExtractor = (item, index) => index.toString()
 
     const renderItem = ({ item }) => (
-        <View style={{marginTop: 20, width: width/1.1, alignSelf: "center"}}>
-            <ListItem containerStyle={{borderRadius: 10}}>
-                <Avatar title={item.name[0]} source={item.avatar_url && { uri: item.avatar_url }}/>
+        <TouchableOpacity style={{marginTop: 20, width: width/1.1, alignSelf: "center"}}>
+            <ListItem containerStyle={{borderRadius: 10, backgroundColor: "#BEFCFF"}}>
                 <ListItem.Content>
-                    <ListItem.Title>{item.name}</ListItem.Title>
-                    <ListItem.Subtitle>{item.subtitle}</ListItem.Subtitle>
+                    <ListItem.Title style={{fontSize: 22}}>{item.username}</ListItem.Title>
                 </ListItem.Content>
-                <ListItem.Chevron />
+                <ListItem.Content right>
+                    <ListItem.Title>
+                        {item.zips} x <Ionicons name="beer-outline" size={15}/>
+                    </ListItem.Title>
+                </ListItem.Content>
+                <ListItem.Chevron/>
             </ListItem>
-        </View>
+        </TouchableOpacity>
 
     )
 
     return (
         <View style={{flex: 1, backgroundColor: COLORS.BACKGROUND}}>
-            <MyHeader title={"Rum: " + roomId} leftAction={() => exitRoom()} rightAction={() => goToEvents()} leftColor={COLORS.SECONDARY} rightColor={COLORS.PRIMARY}/>
-            <FlatList keyExtractor={keyExtractor} data={list} renderItem={renderItem}/>
+            <MyHeader title={"Rum: " + roomId} leftIonIcon="arrow-back" leftAction={() => exitRoom()} rightIonIcon="arrow-forward" rightAction={() => goToEvents()} leftColor={COLORS.SECONDARY} rightColor={COLORS.PRIMARY}/>
+            <FlatList keyExtractor={keyExtractor} data={roomUsers} renderItem={renderItem}/>
         </View>
     )
 

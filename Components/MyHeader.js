@@ -16,14 +16,13 @@ function MyHeader(props) {
           }}
           leftComponent={
               <View style={styles.headerRight}>
+                  {props.leftAction ? (
                   <TouchableOpacity onPress={() => props.leftAction()}>
-                      <Ionicons name="arrow-back" color={props.rightColor} size={37}/>
+                      <Ionicons name={props.leftIonIcon} color={props.rightColor} size={37}/>
                   </TouchableOpacity>
-                  <TouchableOpacity
-                      style={{marginLeft: 10}}
-
-                  >
-                  </TouchableOpacity>
+                  ) : (
+                      <React.Fragment/>
+                  )}
               </View>
           }
 
@@ -31,7 +30,7 @@ function MyHeader(props) {
               <View style={styles.headerRight}>
                   {props.rightAction ? (
                       <TouchableOpacity onPress={() => props.rightAction()}>
-                          <Ionicons name="arrow-forward" color={props.leftColor} size={37}/>
+                          <Ionicons name={props.rightIonIcon} color={props.leftColor} size={37}/>
                       </TouchableOpacity>
                   ) : (
                       <React.Fragment/>
