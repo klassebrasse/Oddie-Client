@@ -1,21 +1,26 @@
 import * as React from "react";
-import {useEffect, useState} from "react";
-import {Dimensions, StyleSheet, TouchableOpacity, View, Text, FlatList} from "react-native";
+import {useContext, useEffect, useState} from "react";
+import {Dimensions, FlatList, Text, TouchableOpacity, View} from "react-native";
 import {socket} from "../Constants/Socket";
 import {COLORS} from "../Constants/Colors";
 import MyHeader from "../Components/MyHeader";
-
-import {Avatar, ListItem} from "react-native-elements";
+import {ListItem} from "react-native-elements";
 import Ionicons from "react-native-vector-icons/Ionicons";
+import {PushNotificationContext} from "../Context/PushNotificationContext";
+
 
 const {width, height} = Dimensions.get('screen')
 
 const RoomScreen = ({route, navigation}) => {
+
     const {username, roomId, color} = route.params;
     const [roomUsers, setRoomUsers] = useState([])
 
+    const context = useContext(PushNotificationContext)
+
     useEffect(() => {
-        socket.emit("join room", roomId, username);
+        socket.emit("join room", roomId, username, context);
+
         return () => {
             setRoomUsers([])
         }
@@ -25,7 +30,7 @@ const RoomScreen = ({route, navigation}) => {
         setRoomUsers(payload)
     })
 
-    function exitRoom (){
+    function exitRoom() {
         socket.disconnect()
         navigation.goBack()
     }
@@ -47,8 +52,8 @@ const RoomScreen = ({route, navigation}) => {
 
     const keyExtractor = (item, index) => index.toString()
 
-    const renderItem = ({ item }) => (
-        <TouchableOpacity style={{marginTop: 20, width: width/1.1, alignSelf: "center"}}>
+    const renderItem = ({item}) => (
+        <TouchableOpacity style={{marginTop: 20, width: width / 1.1, alignSelf: "center"}}>
             <ListItem containerStyle={{borderRadius: 10, backgroundColor: "#BEFCFF"}}>
                 <ListItem.Content>
                     <ListItem.Title style={{fontSize: 22}}>{item.username}</ListItem.Title>
@@ -66,12 +71,15 @@ const RoomScreen = ({route, navigation}) => {
 
     return (
         <View style={{flex: 1, backgroundColor: COLORS.BACKGROUND}}>
-            <MyHeader title={"Rum: " + roomId} leftIonIcon="arrow-back" leftAction={() => exitRoom()} rightIonIcon="arrow-forward" rightAction={() => goToEvents()} leftColor={COLORS.SECONDARY} rightColor={COLORS.PRIMARY}/>
+            <MyHeader title={"Rum: " + roomId} leftIonIcon="arrow-back" leftAction={() => exitRoom()}
+                      rightIonIcon="arrow-forward" rightAction={() => goToEvents()} leftColor={COLORS.SECONDARY}
+                      rightColor={COLORS.PRIMARY}/>
+
             <FlatList keyExtractor={keyExtractor} data={roomUsers} renderItem={renderItem}/>
         </View>
     )
 
 }
 
-
 export default RoomScreen;
+

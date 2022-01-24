@@ -30,7 +30,7 @@ const JoinScreen = ({navigation}) => {
 //"arrow-forward"
     return (
         <View style={{alignItems: "center", backgroundColor: COLORS.BACKGROUND, flex: 1}}>
-            <MyHeader title={"Rum: " + roomId} leftIonIcon="arrow-back" leftAction={() => navigation.goBack()}
+            <MyHeader title="Delta" leftIonIcon="arrow-back" leftAction={() => navigation.goBack()}
                       leftColor={COLORS.SECONDARY} rightColor={COLORS.PRIMARY}/>
             <View style={{marginTop: 50, width: width / 2}}>
                 <Input autoCorrect={false} placeholder="Användarnamn" style={{fontSize: 24, color: COLORS.PRIMARY}}
@@ -46,6 +46,10 @@ const JoinScreen = ({navigation}) => {
             <Button title="Join"
                     onPress={() => joinRoom()}
                     titleStyle={{"fontSize": 24}}
+                    buttonStyle={{
+                        backgroundColor: COLORS.PRIMARY,
+                        borderRadius: 5,
+                    }}
                     containerStyle={{
                         "width": 100,
                         "marginHorizontal": 50,
