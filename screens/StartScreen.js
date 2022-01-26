@@ -38,9 +38,16 @@ const StartScreen = () => {
                         marginVertical: 10,
                         marginTop: height/5
                     }}/>
-            <Switch
-            value={isDark}
-            onValueChange={() => toggleTheme()}/>
+            <View style={{bottom: 0, position: "absolute", marginBottom: height/22}}>
+                <Text style={{fontSize: 20, color: COLORS.PRIMARY, paddingBottom: 20}}>
+                    {isDark ? "Dark Mode" : "Light Mode"}
+                </Text>
+                <Switch
+                    color={COLORS.PRIMARY}
+                    style={{alignSelf: "center"}}
+                    value={isDark}
+                    onValueChange={() => toggleTheme()}/>
+            </View>
         </View>
     )
 }

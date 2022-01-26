@@ -21,6 +21,7 @@ const RoomScreen = ({route, navigation}) => {
     const context = useContext(PushNotificationContext)
 
     useEffect(() => {
+        socket.connect()
         socket.emit("join room", roomId, username, context);
 
         return () => {
