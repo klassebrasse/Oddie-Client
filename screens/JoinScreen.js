@@ -2,13 +2,15 @@ import * as React from "react";
 import {useState} from "react";
 import {Dimensions, Text, View} from 'react-native';
 import {Button, Input} from "react-native-elements";
-import {COLORS} from "../Constants/Colors";
 import MyHeader from "../Components/MyHeader";
 import ColorPicker from "react-native-wheel-color-picker";
+import {useMyTheme} from "../Context/MyThemeContext";
 
 const {width, height} = Dimensions.get('screen')
 
 const JoinScreen = ({navigation}) => {
+
+    const {isDark, COLORS, toggleTheme} = useMyTheme();
 
     const [username, setUsername] = useState(null);
     const [roomId, setRoomId] = useState(null)

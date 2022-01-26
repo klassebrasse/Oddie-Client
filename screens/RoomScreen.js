@@ -2,16 +2,18 @@ import * as React from "react";
 import {useContext, useEffect, useState} from "react";
 import {Dimensions, FlatList, Text, TouchableOpacity, View} from "react-native";
 import {socket} from "../Constants/Socket";
-import {COLORS} from "../Constants/Colors";
 import MyHeader from "../Components/MyHeader";
 import {ListItem} from "react-native-elements";
 import Ionicons from "react-native-vector-icons/Ionicons";
 import {PushNotificationContext} from "../Context/PushNotificationContext";
+import {useMyTheme} from "../Context/MyThemeContext";
 
 
 const {width, height} = Dimensions.get('screen')
 
 const RoomScreen = ({route, navigation}) => {
+
+    const {isDark, COLORS, toggleTheme} = useMyTheme();
 
     const {username, roomId, color} = route.params;
     const [roomUsers, setRoomUsers] = useState([])

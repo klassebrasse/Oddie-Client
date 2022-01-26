@@ -1,11 +1,14 @@
 import {Header} from "react-native-elements";
 import {LinearGradient} from "expo-linear-gradient";
-import {COLORS} from "../Constants/Colors";
 import {StyleSheet, TouchableOpacity, View} from "react-native";
 import Ionicons from "react-native-vector-icons/Ionicons";
 import * as React from "react";
+import {useMyTheme} from "../Context/MyThemeContext";
 
 function MyHeader(props) {
+
+    const {isDark, COLORS, toggleTheme} = useMyTheme();
+
   return(
       <Header
           ViewComponent={LinearGradient} // Don't forget this!
@@ -48,7 +51,7 @@ const styles = StyleSheet.create({
     headerContainer: {
         justifyContent: 'center',
         alignItems: 'center',
-        backgroundColor: COLORS.SECONDARY,
+        backgroundColor: "red",
         marginBottom: 20,
         width: '100%',
         paddingVertical: 15,

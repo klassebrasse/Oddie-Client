@@ -2,30 +2,31 @@ import * as React from "react";
 import {Dimensions, Text, View} from 'react-native';
 import {useNavigation} from "@react-navigation/native";
 import MyHeader from "../Components/MyHeader";
-import {COLORS} from "../Constants/Colors";
-import {Button} from "react-native-elements";
-import {useContext} from "react";
+import {useMyTheme} from "../Context/MyThemeContext";
+import {Button, Switch} from "react-native-elements";
+import {useContext, useEffect, useState} from "react";
 import {PushNotificationContext} from "../Context/PushNotificationContext";
+import {MyThemeContext} from "../Context/MyThemeContext";
+import {socket} from "../Constants/Socket";
 
 const {width, height} = Dimensions.get('screen')
 
 const StartScreen = () => {
 
-    const context = useContext(PushNotificationContext)
+    const {isDark, COLORS, toggleTheme} = useMyTheme();
 
     const navigation = useNavigation();
+
+
 
     return (
         <View style={{alignItems: "center", backgroundColor: COLORS.BACKGROUND, flex: 1}}>
             <MyHeader title={"Start"} leftIonIcon="cog" leftAction={() => console.log("")} leftColor={COLORS.SECONDARY}
                       rightColor={COLORS.PRIMARY}/>
-            <Text style={{fontSize: 32, color: "white"}}>
-                {context}
-            </Text>
 
             <Button title="Spela"
                     onPress={() => navigation.navigate("Join")}
-                    titleStyle={{fontSize: 28}}
+                    titleStyle={{fontSize: 28, color: COLORS.SECONDARY}}
                     buttonStyle={{
                         width: 120,
                         height: 70,
@@ -37,6 +38,9 @@ const StartScreen = () => {
                         marginVertical: 10,
                         marginTop: height/5
                     }}/>
+            <Switch
+            value={isDark}
+            onValueChange={() => toggleTheme()}/>
         </View>
     )
 }

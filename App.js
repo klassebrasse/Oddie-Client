@@ -1,4 +1,4 @@
-import React, {useEffect, useRef, useState} from 'react';
+import React, {createContext, useEffect, useRef, useState} from 'react';
 import Constants from 'expo-constants';
 import {NavigationContainer} from '@react-navigation/native';
 import {createNativeStackNavigator} from '@react-navigation/native-stack';
@@ -9,9 +9,13 @@ import {Dimensions, Platform} from "react-native";
 import EventsScreen from "./screens/EventsScreen";
 import * as Notifications from 'expo-notifications';
 import {PushNotificationContext} from "./Context/PushNotificationContext";
+import {ThemeProvider} from "./Context/MyThemeContext";
 
-const {width, height} = Dimensions.get('screen')
+const {width, height} = Dimensions.get('screen');
+
 const Stack = createNativeStackNavigator();
+
+
 
 Notifications.setNotificationHandler({
     handleNotification: async () => ({
@@ -81,8 +85,15 @@ export default function App() {
         };
     }, []);
 
+    const [myTheme, setMyTheme] = useState("light");
+
+    function toggleTheme() {
+        setMyTheme(style => (style === "light" ? "dark" : "light"));
+    }
+
     return (
         <PushNotificationContext.Provider value={expoPushToken}>
+            <ThemeProvider>
             <NavigationContainer>
                 <Stack.Navigator initialRouteName="Start">
                     <Stack.Screen name="Start" component={StartScreen}
@@ -106,6 +117,7 @@ export default function App() {
                     />
                 </Stack.Navigator>
             </NavigationContainer>
+            </ThemeProvider>
         </PushNotificationContext.Provider>
     )
 }
