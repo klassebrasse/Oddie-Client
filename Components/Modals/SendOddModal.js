@@ -1,60 +1,107 @@
-import React, { useState } from "react";
-import {Modal, StyleSheet, Text, Pressable, View, Dimensions} from "react-native";
-import {Button} from "react-native-elements";
+import React, {FC, useState} from "react";
+import {Modal, StyleSheet, Text, Pressable, View, TouchableOpacity, Dimensions} from "react-native";
+import {ListItem, Slider} from "react-native-elements";
+import Ionicons from "react-native-vector-icons/Ionicons";
 import {useMyTheme} from "../../Context/MyThemeContext";
 
-const {width, height} = Dimensions.get('screen')
+const  {width, height} = Dimensions.get('screen')
 
-const SendOddModal = ({toggle, hideModal, sendOdds, username}) => {
+
+const SendOddModal = ({username, roomId, socket, color, currentUser, sumOfZips}) =>  {
     const {isDark, COLORS, toggleTheme} = useMyTheme();
     const [modalVisible, setModalVisible] = useState(false);
+    const [zips, setZips] = useState(0);
+
+    function sendOdds() {
+        socket.emit("sending odds", username, zips, roomId)
+    }
 
     return (
+        <View style={styles.centeredView}>
             <Modal
-                animationType="slide"
+                animationType="fade"
                 transparent={true}
-                visible={toggle}
-                onRequestClose={() => {
-
-                    setModalVisible(!modalVisible);
-                }}
+                visible={modalVisible}
             >
-                <View style={styles.centeredView}>
-                    <View style={{backgroundColor: COLORS.SECONDBACKGROUND, height: height/1.6, width: width/1.2, borderRadius: 15, alignItems: "center", elevation: 20,
-                        shadowColor: "#000",
+                <View style={{
+                    flex: 1,
+                    justifyContent: "center",
+                    alignItems: "center",
+                    marginTop: 22
+                }}>
+                    <View style={{
+                        width: width/1.2,
+                        height: height/1.7,
+                        backgroundColor: COLORS.BACKGROUND,
+                        borderRadius: 20,
+                        alignItems: "center",
+                        shadowColor: "#000000",
                         shadowOffset: {
-                            width: 0,
-                            height: 2
+                            width: 8,
+                            height: 14
                         },
-                        shadowOpacity: 0.25,
-                        shadowRadius: 4,
+                        shadowOpacity: 0.3,
+                        shadowRadius: 7,
+                        elevation: 2
                     }}>
-                        <Text style={{color: COLORS.CONTRAST, fontSize: 20}}>Oddsa {username}</Text>
-                        <View style={{flex: 1, flexDirection: "row", justifyContent: "space-evenly", width: "100%"}}>
-                            <Button
-                                title="Stäng"
-                                buttonStyle={{
-                                    backgroundColor: COLORS.PRIMARY,
-                                    borderRadius: 5,
-                                }}
-                                titleStyle={{fontSize: 20, color: COLORS.SECONDARY}}
-                                onPress={() => hideModal()}
-                            />
-                            <Button
-                                title="Stäng"
-                                buttonStyle={{
-                                    backgroundColor: COLORS.PRIMARY,
-                                    borderRadius: 5,
-                                }}
-                                titleStyle={{fontSize: 20, color: COLORS.SECONDARY}}
-                                onPress={() => hideModal()}
-                            />
-                        </View>
+                        <Ionicons size={42} color="sandybrown" name="beer-outline"/>
+                        <Text style={{fontSize: 24}}>Oddsa {username}</Text>
+                        <Text>{zips}</Text>
+                        <Slider
+                            step={1}
+                            style={{width: width/1.5, height: 40}}
+                            minimumValue={0}
+                            maximumValue={15}
+                            minimumTrackTintColor="sandybrown"
+                            maximumTrackTintColor="#000000"
+                            onValueChange={(zip) => setZips(zip)}
+                        />
+                        <TouchableOpacity
+                            style={[styles.button, styles.buttonClose]}
+                            onPress={() => sendOdds()}
+                        >
+                            <View style={{flexDirection: "row"}}>
+                                <Text style={styles.textStyle}>Oddsa </Text>
+                                <Text style={{fontWeight: "bold", color: "sandybrown"}}>{username}</Text>
+                                <Text style={styles.textStyle}> med {zips} klunkar</Text>
+                            </View>
 
+                        </TouchableOpacity>
+                        <View style={{height:20}}/>
+                        <Pressable
+                            style={[styles.button, styles.buttonClose]}
+                            onPress={() => setModalVisible(!modalVisible)}
+                        >
+                            <Text style={styles.textStyle}>Hide Modal</Text>
+                        </Pressable>
                     </View>
                 </View>
             </Modal>
+            <TouchableOpacity disabled={username === currentUser} onPress={() => setModalVisible(true)} style={{
+                flexDirection: "row",
+                width: width / 1.1,
+                alignSelf: 'center',
+                marginHorizontal: 10,
+                padding: 16,
+                borderRadius: 10,
+                backgroundColor: color,
+                shadowOffset: {
+                    width: 3,
+                    height: 3
+                },
+                shadowColor: '#3a3a3a',
+                shadowOpacity: 0.9
+            }}>
+                <Text style={{color: "black", fontSize: 22}}>{username}</Text>
 
+                {username === currentUser ? (
+                    <Ionicons style={{position: "absolute", right: 20, alignSelf: "center"}} size={20} name="person"/>
+                ) : (
+                    <Ionicons style={{position: "absolute", right: 20, alignSelf: "center"}} size={20} name="arrow-forward"/>
+                )}
+
+            </TouchableOpacity>
+        </View>
     );
 };
 
@@ -66,24 +113,30 @@ const styles = StyleSheet.create({
         marginTop: 22
     },
     modalView: {
-        margin: 20,
-        backgroundColor: "white",
+        width: width/1.2,
+        height: height/1.7,
+        backgroundColor: "rgba(255,18,109,0.92)",
         borderRadius: 20,
-        padding: 35,
         alignItems: "center",
-        shadowColor: "#000",
+        shadowColor: "#000000",
         shadowOffset: {
-            width: 0,
-            height: 2
+            width: 8,
+            height: 14
         },
-        shadowOpacity: 0.25,
-        shadowRadius: 4,
-        elevation: 5
+        shadowOpacity: 0.3,
+        shadowRadius: 7,
+        elevation: 2
     },
     button: {
         borderRadius: 20,
         padding: 10,
         elevation: 2
+    },
+    buttonOpen: {
+        backgroundColor: "#F194FF",
+    },
+    buttonClose: {
+        backgroundColor: "#2196F3",
     },
     textStyle: {
         color: "white",
@@ -93,7 +146,22 @@ const styles = StyleSheet.create({
     modalText: {
         marginBottom: 15,
         textAlign: "center"
-    }
+    },
+    container: {
+        flexDirection: "row",
+        width: width / 1.1,
+        alignSelf: 'center',
+        marginHorizontal: 10,
+        padding: 16,
+        borderRadius: 10,
+        backgroundColor: "#ff188c",
+        shadowOffset: {
+            width: 3,
+            height: 3
+        },
+        shadowColor: '#3a3a3a',
+        shadowOpacity: 0.9
+    },
 });
 
 export default SendOddModal;

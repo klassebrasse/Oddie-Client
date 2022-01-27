@@ -44,35 +44,13 @@ const RoomScreen = ({route, navigation}) => {
 
     const keyExtractor = (item, index) => index.toString()
 
-    const renderItem = ({item}) => (
-        <TouchableOpacity onPress={() => {setModalVisible(!modalVisible)}} disabled={username === item.username} style={{marginTop: 20, width: width / 1.1, alignSelf: "center"}}>
-            <ListItem containerStyle={{borderRadius: 10, backgroundColor: item.color}}>
-                <ListItem.Content>
-                    <ListItem.Title style={{fontSize: 22}}>{item.username}</ListItem.Title>
-                </ListItem.Content>
-                <ListItem.Content right>
-                    <ListItem.Title>
-                        {item.zips} x <Ionicons name="beer-outline" size={15}/>
-                    </ListItem.Title>
-                </ListItem.Content>
-                {username === item.username ? (
-                    <Ionicons name="person-outline" size={15}/>
-                ) : (
-                    <ListItem.Chevron/>
-                    )}
-            </ListItem>
-            <SendOddModal toggle={modalVisible} hideModal={() => {setModalVisible(!modalVisible)}} username={item.username}/>
-        </TouchableOpacity>
-
-    )
-
     return (
         <View style={{flex: 1, backgroundColor: COLORS.BACKGROUND}}>
             <MyHeader title={"Rum: " + roomId} leftIonIcon="arrow-back" leftAction={() => exitRoom()}
                       rightIonIcon="arrow-forward" rightAction={() => goToEvents()} leftColor={COLORS.SECONDARY}
                       rightColor={COLORS.PRIMARY}/>
 
-            <FlatList keyExtractor={keyExtractor} data={roomUsers} renderItem={renderItem}/>
+            <FlatList keyExtractor={keyExtractor} data={roomUsers} renderItem={({item}) => <SendOddModal username={item.username} roomId={item.roomId} socket={socket} color={item.color} currentUser={username} sumOfZips={item.zips}/>}/>
         </View>
     )
 
