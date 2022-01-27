@@ -4,6 +4,7 @@ import {Dimensions, Text, View} from 'react-native';
 import {Button, Input} from "react-native-elements";
 import MyHeader from "../Components/MyHeader";
 import {useMyTheme} from "../Context/MyThemeContext";
+import SendOddModal from "../Components/Modals/SendOddModal";
 const randomColor = require('randomcolor');
 
 const {width, height} = Dimensions.get('screen')
@@ -60,8 +61,6 @@ const JoinScreen = ({navigation}) => {
                         "marginHorizontal": 50,
                         "marginVertical": 10,
                     }}/>
-
-
         </View>
     )
 }
