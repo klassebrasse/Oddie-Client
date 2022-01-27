@@ -4,10 +4,6 @@ import {useNavigation} from "@react-navigation/native";
 import MyHeader from "../Components/MyHeader";
 import {useMyTheme} from "../Context/MyThemeContext";
 import {Button, Switch} from "react-native-elements";
-import {useContext, useEffect, useState} from "react";
-import {PushNotificationContext} from "../Context/PushNotificationContext";
-import {MyThemeContext} from "../Context/MyThemeContext";
-import {socket} from "../Constants/Socket";
 
 const {width, height} = Dimensions.get('screen')
 

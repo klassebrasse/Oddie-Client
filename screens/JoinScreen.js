@@ -3,8 +3,8 @@ import {useState} from "react";
 import {Dimensions, Text, View} from 'react-native';
 import {Button, Input} from "react-native-elements";
 import MyHeader from "../Components/MyHeader";
-import ColorPicker from "react-native-wheel-color-picker";
 import {useMyTheme} from "../Context/MyThemeContext";
+const randomColor = require('randomcolor');
 
 const {width, height} = Dimensions.get('screen')
 
@@ -13,15 +13,18 @@ const JoinScreen = ({navigation}) => {
     const {isDark, COLORS, toggleTheme} = useMyTheme();
 
     const [username, setUsername] = useState(null);
-    const [roomId, setRoomId] = useState(null)
-    const [color, setColor] = useState(COLORS.PRIMARY)
+    const [roomId, setRoomId] = useState(null);
+
+    const customColor = randomColor({
+        hue: '#00C1CB'
+    });
 
     function joinRoom() {
         if (roomId && username) {
             navigation.navigate('Room', {
                 username: username,
                 roomId: roomId,
-                color: color,
+                color: customColor,
 
             });
         } else if (!roomId && !username) alert("Fyll i Användarnamn och Lobby-kod")

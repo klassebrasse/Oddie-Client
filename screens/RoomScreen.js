@@ -22,7 +22,7 @@ const RoomScreen = ({route, navigation}) => {
 
     useEffect(() => {
         socket.connect()
-        socket.emit("join room", roomId, username, context);
+        socket.emit('join room', roomId, username, context, color);
 
         return () => {
             setRoomUsers([])
@@ -34,7 +34,7 @@ const RoomScreen = ({route, navigation}) => {
     })
 
     function exitRoom() {
-        socket.disconnect()
+        socket.emit('leave room', roomId)
         navigation.goBack()
     }
 
@@ -56,8 +56,8 @@ const RoomScreen = ({route, navigation}) => {
     const keyExtractor = (item, index) => index.toString()
 
     const renderItem = ({item}) => (
-        <TouchableOpacity style={{marginTop: 20, width: width / 1.1, alignSelf: "center"}}>
-            <ListItem containerStyle={{borderRadius: 10, backgroundColor: "#BEFCFF"}}>
+        <TouchableOpacity disabled={username === item.username} style={{marginTop: 20, width: width / 1.1, alignSelf: "center"}}>
+            <ListItem containerStyle={{borderRadius: 10, backgroundColor: item.color}}>
                 <ListItem.Content>
                     <ListItem.Title style={{fontSize: 22}}>{item.username}</ListItem.Title>
                 </ListItem.Content>
@@ -66,7 +66,11 @@ const RoomScreen = ({route, navigation}) => {
                         {item.zips} x <Ionicons name="beer-outline" size={15}/>
                     </ListItem.Title>
                 </ListItem.Content>
-                <ListItem.Chevron/>
+                {username === item.username ? (
+                    <Ionicons name="person-outline" size={15}/>
+                ) : (
+                    <ListItem.Chevron/>
+                    )}
             </ListItem>
         </TouchableOpacity>
 

@@ -1,6 +1,6 @@
 import React, {createContext, useEffect, useRef, useState} from 'react';
 import Constants from 'expo-constants';
-import {NavigationContainer} from '@react-navigation/native';
+import {NavigationContainer, useNavigation} from '@react-navigation/native';
 import {createNativeStackNavigator} from '@react-navigation/native-stack';
 import StartScreen from "./screens/StartScreen";
 import JoinScreen from "./screens/JoinScreen";
@@ -14,8 +14,6 @@ import {ThemeProvider} from "./Context/MyThemeContext";
 const {width, height} = Dimensions.get('screen');
 
 const Stack = createNativeStackNavigator();
-
-
 
 Notifications.setNotificationHandler({
     handleNotification: async () => ({
@@ -31,7 +29,6 @@ export default function App() {
     const [notification, setNotification] = useState(false);
     const notificationListener = useRef();
     const responseListener = useRef();
-
 
     async function registerForPushNotificationsAsync() {
         let token;
@@ -76,7 +73,7 @@ export default function App() {
 
         // This listener is fired whenever a user taps on or interacts with a notification (works when app is foregrounded, backgrounded, or killed)
         responseListener.current = Notifications.addNotificationResponseReceivedListener(response => {
-            console.log(response);
+            console.log("resppasosopass" + response.notification);
         });
 
         return () => {

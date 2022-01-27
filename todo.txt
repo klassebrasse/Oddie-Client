@@ -1,2 +1,3 @@
-Ta bort användare från listan och arrayen när någon lämnar rummet
 Man ansluter till servern direkt man startar appen, inte bra?????
+Disable sitt egna card
+Kontrollera så ingen heter samma
