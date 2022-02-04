@@ -1,10 +1,11 @@
 import * as React from "react";
-import {useState} from "react";
+import {useEffect, useState} from "react";
 import {Dimensions, Text, View} from 'react-native';
 import {Button, Input} from "react-native-elements";
 import MyHeader from "../Components/MyHeader";
 import {useMyTheme} from "../Context/MyThemeContext";
 import SendOddModal from "../Components/Modals/SendOddModal";
+import {socket} from "../Constants/Socket";
 const randomColor = require('randomcolor');
 
 const {width, height} = Dimensions.get('screen')
@@ -20,17 +21,29 @@ const JoinScreen = ({navigation}) => {
         hue: '#00C1CB'
     });
 
-    function joinRoom() {
-        if (roomId && username) {
-            navigation.navigate('Room', {
-                username: username,
-                roomId: roomId,
-                color: customColor,
+    useEffect(() => {
 
-            });
-        } else if (!roomId && !username) alert("Fyll i Användarnamn och Lobby-kod")
-        else if (!roomId) alert("Fyll i Lobby-kod")
-        else if (!username) alert("Fyll i Användarnamn")
+    }, []);
+
+    async function joinRoom() {
+        socket.emit('check username', roomId, username, (response) => {
+            console.log("responsen är: " + response.usernameIsOk)
+            if (response.usernameIsOk){
+                if (roomId && username) {
+                    navigation.navigate('Room', {
+                        username: username,
+                        roomId: roomId,
+                        color: customColor,
+
+                    });
+                } else if (!roomId && !username) alert("Fyll i Användarnamn och Lobby-kod")
+                else if (!roomId) alert("Fyll i Lobby-kod")
+                else if (!username) alert("Fyll i Användarnamn")
+            }
+            else {
+                alert("Användarnamn är upptaget")
+            }
+        })
     }
 
 //"arrow-forward"
