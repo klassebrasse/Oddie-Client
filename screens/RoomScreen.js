@@ -1,13 +1,12 @@
 import * as React from "react";
 import {useContext, useEffect, useState} from "react";
-import {Dimensions, FlatList, Modal, Pressable, StyleSheet, Text, TouchableOpacity, View} from "react-native";
+import {Dimensions, FlatList, StyleSheet, Text, TouchableOpacity, View} from "react-native";
 import {socket} from "../Constants/Socket";
 import MyHeader from "../Components/MyHeader";
-import {ListItem} from "react-native-elements";
-import Ionicons from "react-native-vector-icons/Ionicons";
 import {PushNotificationContext} from "../Context/PushNotificationContext";
 import {useMyTheme} from "../Context/MyThemeContext";
 import SendOddModal from "../Components/Modals/SendOddModal";
+import AwesomeAlert from "react-native-awesome-alerts";
 
 
 const {width, height} = Dimensions.get('screen')
@@ -17,8 +16,10 @@ const RoomScreen = ({route, navigation}) => {
     const {isDark, COLORS, toggleTheme} = useMyTheme();
     const {username, roomId, color} = route.params;
     const [roomUsers, setRoomUsers] = useState([])
-    const [modalVisible, setModalVisible] = useState(false);
     const context = useContext(PushNotificationContext)
+    const [showAlert, setShowAlert] = useState(false)
+    const [alertText, setAlertText] = useState("sss")
+    const [loadingOdd, setLoadingOdd] = useState(true)
 
     useEffect(() => {
         socket.connect()
@@ -42,15 +43,50 @@ const RoomScreen = ({route, navigation}) => {
         navigation.navigate('Events')
     }
 
+    const alertTextAndLoading = (loading, successText) => {
+        setLoadingOdd(loading)
+        setAlertText(successText)
+    };
+
+    const alertFunction = (loading, successText) => {
+        setShowAlert(true)
+        setLoadingOdd(loading)
+        setAlertText(successText)
+        setTimeout(() => {setShowAlert(false)},4000)
+    };
+
     const keyExtractor = (item, index) => index.toString()
 
     return (
         <View style={{flex: 1, backgroundColor: COLORS.BACKGROUND}}>
+
+                <AwesomeAlert
+                    show={showAlert}
+                    showProgress={loadingOdd}
+                    title={alertText}
+                    message="(Tryck för att stänga)"
+                    closeOnTouchOutside={true}
+                    closeOnHardwareBackPress={false}
+                    alertContainerStyle={{
+                        backgroundColor: "rgba(0,193,203,0.24)"
+                    }}
+                    titleStyle={{fontSize: 20, color: COLORS.CONTRAST}}
+                    contentContainerStyle={{
+                        backgroundColor: COLORS.BACKGROUND
+                    }}
+                    customView={
+                        <TouchableOpacity style={{height: height, width: width, position: 'absolute'}} onPress={() => setShowAlert(false)}/>
+                    }
+                />
+
+
             <MyHeader title={"Rum: " + roomId} leftIonIcon="arrow-back" leftAction={() => exitRoom()}
                       rightIonIcon="arrow-forward" rightAction={() => goToEvents()} leftColor={COLORS.SECONDARY}
                       rightColor={COLORS.PRIMARY}/>
-
-            <FlatList keyExtractor={keyExtractor} data={roomUsers} renderItem={({item}) => <SendOddModal username={item.username} roomId={item.roomId} socket={socket} color={item.color} currentUser={username} sumOfZips={item.zips}/>}/>
+            <FlatList keyExtractor={keyExtractor} data={roomUsers}
+                      renderItem={({item}) => <SendOddModal alertTextAndLoading={alertTextAndLoading} alert={alertFunction} username={item.username}
+                                                            roomId={item.roomId} socket={socket} color={item.color}
+                                                            currentUser={username} sumOfZips={item.zips}/>}/>
         </View>
     )
 

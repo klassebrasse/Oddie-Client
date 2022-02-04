@@ -3,17 +3,28 @@ import {Modal, StyleSheet, Text, Pressable, View, TouchableOpacity, Dimensions} 
 import {Button, ListItem, Slider} from "react-native-elements";
 import Ionicons from "react-native-vector-icons/Ionicons";
 import {useMyTheme} from "../../Context/MyThemeContext";
+import AwesomeAlert from "react-native-awesome-alerts";
 
 const  {width, height} = Dimensions.get('screen')
 
 
-const SendOddModal = ({username, roomId, socket, color, currentUser, sumOfZips}) =>  {
+const SendOddModal = ({username, roomId, socket, color, currentUser, sumOfZips, alert, alertTextAndLoading}) =>  {
     const {isDark, COLORS, toggleTheme} = useMyTheme();
     const [modalVisible, setModalVisible] = useState(false);
     const [zips, setZips] = useState(0);
 
     function sendOdds() {
-        socket.emit("sending odds", username, zips, roomId)
+        setModalVisible(false);
+        alert(true, "Skickar odd");
+
+        socket.emit('sending odds', username, zips, roomId, (callback) => {
+            if (callback.oddsSent){
+                alertTextAndLoading(false, 'Odds skickad!');
+            }
+            else if(!callback.oddsSent){
+                alertTextAndLoading(false, 'Något gick fel')
+            }
+        })
     }
 
     return (
@@ -59,27 +70,35 @@ const SendOddModal = ({username, roomId, socket, color, currentUser, sumOfZips})
                         />
                         <TouchableOpacity
                             style={{
-                                backgroundColor: COLORS.SECONDARY,
-                                borderRadius: 20,
+                                marginTop: height/20,
+                                backgroundColor: COLORS.PRIMARY,
+                                borderRadius: 5,
                                 padding: 10,
                                 elevation: 2
                             }}
                             onPress={() => sendOdds()}
                         >
                             <View style={{flexDirection: "row"}}>
-                                <Text style={styles.textStyle}>Oddsa </Text>
-                                <Text style={{fontWeight: "bold", color: COLORS.PRIMARY}}>{username}</Text>
-                                <Text style={styles.textStyle}> med {zips} klunkar</Text>
+                                <Text style={{color: COLORS.BACKGROUND, fontWeight: "bold", textAlign: "center", fontSize: 18}}>Oddsa </Text>
+                                <Text style={{fontWeight: "bold", color: COLORS.CONTRAST, fontSize: 18}}>{username}</Text>
+                                <Text style={{color: COLORS.BACKGROUND, fontWeight: "bold", textAlign: "center", fontSize: 18}}> med {zips} klunkar</Text>
                             </View>
+
 
                         </TouchableOpacity>
                         <View style={{height:20}}/>
                         <Button
                             title="Gå tillbaka"
                             titleStyle={{"fontSize": 24}}
+                            containerStyle={{
+                                position: 'absolute',
+                                bottom: height/20,
+
+                            }}
                             buttonStyle={{
                                 backgroundColor: COLORS.PRIMARY,
                                 borderRadius: 5,
+
                             }}
                             onPress={() => setModalVisible(!modalVisible)}
                         />
@@ -155,7 +174,7 @@ const styles = StyleSheet.create({
         backgroundColor: "#2196F3",
     },
     textStyle: {
-        color: "white",
+        color: "black",
         fontWeight: "bold",
         textAlign: "center"
     },

@@ -4,7 +4,7 @@ import {darkColors, lightColors} from "../Constants/Colors";
 export const MyThemeContext = React.createContext(null);
 
 export const ThemeProvider = (props) => {
-    const [isDark, setIsDark] = useState(null)
+    const [isDark, setIsDark] = useState(true)
 
     function toggleTheme() {
         setIsDark(!isDark);
