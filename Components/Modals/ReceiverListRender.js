@@ -4,59 +4,19 @@ import {Button, Slider} from "react-native-elements";
 import Ionicons from "react-native-vector-icons/Ionicons";
 import {useMyTheme} from "../../Context/MyThemeContext";
 import {Timer} from "../Timer";
+import {socket} from "../../Constants/Socket";
 
 const  {width, height} = Dimensions.get('screen')
 
 
-const SendOddModal = ({username, roomId, socket, color, currentUser, sumOfZips, alert, alertTextAndLoading, targetSocketId, myTimeOuts, refresh}) =>  {
+const SendOddModal = ({receiver, roomId,socket, sender, zips}) =>  {
     const {isDark, COLORS, toggleTheme} = useMyTheme();
     const [modalVisible, setModalVisible] = useState(false);
-    const [zips, setZips] = useState(0);
-    const [oddTimeOut, setOddTimeOut] = useState(false)
-    const [index, setIndex] = useState(-1)
-    
-    function checkTimeOut() {
-        console.log("MYT TTIERIMMEIIE" + JSON.stringify(myTimeOuts))
-        if (myTimeOuts){
-            const isTimeOut = myTimeOuts.findIndex((obj => obj.socketId === targetSocketId));
-            console.log(isTimeOut + " --------INDEX")
-
-            if (isTimeOut >= 0){
-                //console.log("TITIMIMTIMTIMIMASJNIODHASDUIHASUID")
-                //console.log("TIMER: " + myTimeOuts[isTimeOut]?.time)
-                //let time = new Timer()
-                //time = myTimeOuts[isTimeOut]?.time
-
-                setOddTimeOut(true)
-                setIndex(isTimeOut)
-            }
-            else if(isTimeOut < 0) {
-                setOddTimeOut(false)
-            }
-        }
-
-    }
+    const [myOdds, setMyOdds] = useState(0);
 
     useEffect(() => {
-        checkTimeOut()
-    }, [myTimeOuts]);
 
-    function sendOdds() {
-        setModalVisible(false);
-        alert(true, "Skickar odd");
-        refresh()
-
-        socket.emit('sending odds', username, zips, roomId, targetSocketId, (callback) => {
-            if (callback.oddsSent){
-                alertTextAndLoading(false, 'Odds skickad!');
-                console.log("odds skickad")
-                refresh();
-            }
-            else if(!callback.oddsSent){
-                alertTextAndLoading(false, 'Något gick fel')
-            }
-        })
-    }
+    }, []);
 
     return (
         <View style={styles.centeredView}>
@@ -87,7 +47,7 @@ const SendOddModal = ({username, roomId, socket, color, currentUser, sumOfZips, 
                         elevation: 5
                     }}>
                         <Ionicons size={42} color="sandybrown" name="beer-outline"/>
-                        <Text style={{fontSize: 24, color: COLORS.CONTRAST}}>Oddsa {username}</Text>
+                        <Text style={{fontSize: 24, color: COLORS.CONTRAST}}>{sender} oddsade dig </Text>
                         <Text style={{color: COLORS.PRIMARY, fontSize: 18}}>{zips}</Text>
                         <Slider
                             thumbStyle={{backgroundColor: COLORS.PRIMARY, width: 30, height: 30}}
@@ -97,7 +57,7 @@ const SendOddModal = ({username, roomId, socket, color, currentUser, sumOfZips, 
                             maximumValue={15}
                             minimumTrackTintColor={COLORS.PRIMARY}
                             maximumTrackTintColor="#000000"
-                            onValueChange={(zip) => setZips(zip)}
+                            onValueChange={(odds) => setMyOdds(odds)}
                         />
                         <TouchableOpacity
                             style={{
@@ -107,12 +67,12 @@ const SendOddModal = ({username, roomId, socket, color, currentUser, sumOfZips, 
                                 padding: 10,
                                 elevation: 2
                             }}
-                            onPress={() => sendOdds()}
+
                         >
                             <View style={{flexDirection: "row"}}>
-                                <Text style={{color: COLORS.BACKGROUND, fontWeight: "bold", textAlign: "center", fontSize: 18}}>Oddsa </Text>
-                                <Text style={{fontWeight: "bold", color: COLORS.CONTRAST, fontSize: 18}}>{username}</Text>
-                                <Text style={{color: COLORS.BACKGROUND, fontWeight: "bold", textAlign: "center", fontSize: 18}}> med {zips} klunkar</Text>
+                                <Text style={{color: COLORS.BACKGROUND, fontWeight: "bold", textAlign: "center", fontSize: 18}}>Vad är oddsen? </Text>
+                                <Text style={{fontWeight: "bold", color: COLORS.CONTRAST, fontSize: 18}}>sd</Text>
+                                <Text style={{color: COLORS.BACKGROUND, fontWeight: "bold", textAlign: "center", fontSize: 18}}>HAJA</Text>
                             </View>
 
 
@@ -136,14 +96,14 @@ const SendOddModal = ({username, roomId, socket, color, currentUser, sumOfZips, 
                     </View>
                 </View>
             </Modal>
-            <TouchableOpacity disabled={username === currentUser} onPress={() => setModalVisible(true)} style={{
+            <TouchableOpacity onPress={() => setModalVisible(true)} style={{
                 flexDirection: "row",
                 width: width / 1.1,
                 alignSelf: 'center',
                 marginHorizontal: 10,
                 padding: 16,
                 borderRadius: 10,
-                backgroundColor: color,
+                backgroundColor: "red",
                 shadowOffset: {
                     width: 1.5,
                     height: 2
@@ -152,26 +112,14 @@ const SendOddModal = ({username, roomId, socket, color, currentUser, sumOfZips, 
                 shadowRadius: 4,
                 elevation: 5
             }}>
-                {oddTimeOut ? (<View>
-                    <Text style={{fontSize: 30}}>TIMEOUT: </Text>
-                </View>) : (
-                    <View>
-                        <Text>INGEN TIMEOUT KBK</Text>
-                    </View>
-                )}
-                <Text style={{color: "black", fontSize: 22}}>{username}</Text>
+
+                <Text style={{color: "black", fontSize: 22}}>{sender}</Text>
                 <View style={{position: "absolute", right: width/8, alignSelf: "center", flexDirection: "row"}} >
                     <Text>
-                        {sumOfZips}x
+                        {zips}x
                     </Text>
                     <Ionicons name="beer-outline" size={17}/>
                 </View>
-
-                {username === currentUser ? (
-                    <Ionicons style={{position: "absolute", right: 20, alignSelf: "center"}} size={20} name="person"/>
-                ) : (
-                    <Ionicons style={{position: "absolute", right: 20, alignSelf: "center"}} size={20} name="arrow-forward"/>
-                )}
 
             </TouchableOpacity>
         </View>

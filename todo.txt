@@ -1,4 +1,5 @@
 Man ansluter till servern direkt man startar appen, inte bra?????
 BottomSheet elements, settings startScrteen
 Göra Callbacks till servern istället för vanliga emits (roomUsers)
+TIMER
 APPLE TV!!!

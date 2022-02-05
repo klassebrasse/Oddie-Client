@@ -64,7 +64,9 @@ const RoomScreen = ({route, navigation}) => {
     }
 
     function goToEvents() {
-        navigation.navigate('Events')
+        navigation.navigate('Events', {
+            roomId: roomId,
+        });
     }
 
     const alertTextAndLoading = (loading, successText) => {
