@@ -7,6 +7,7 @@ import {PushNotificationContext} from "../Context/PushNotificationContext";
 import {useMyTheme} from "../Context/MyThemeContext";
 import SendOddModal from "../Components/Modals/SendOddModal";
 import AwesomeAlert from "react-native-awesome-alerts";
+import { Timer, Time, TimerOptions } from 'timer-node';
 
 
 const {width, height} = Dimensions.get('screen')
@@ -20,19 +21,42 @@ const RoomScreen = ({route, navigation}) => {
     const [showAlert, setShowAlert] = useState(false)
     const [alertText, setAlertText] = useState("sss")
     const [loadingOdd, setLoadingOdd] = useState(true)
+    const [myTimeouts, setMyTimeouts] = useState([
+        {
+            socketId: null,
+            time: Timer,
+        },
+    ])
 
     useEffect(() => {
         socket.connect()
         socket.emit('join room', roomId, username, context, color);
 
+        socket.on('users', payload => {
+            setRoomUsers(payload)
+            renderMyTimeouts(payload)
+        })
+
+
+
         return () => {
             setRoomUsers([])
+            setMyTimeouts([
+                {
+                    socketId: null,
+                    time: Timer,
+                },
+            ])
         }
     }, []);
 
-    socket.on('users', payload => {
-        setRoomUsers(payload)
-    })
+    function renderMyTimeouts(payload){
+        console.log("DETTA TRIGGAS. PAYLOAD: ")
+        const myUserIndex = payload.findIndex((user => user.id === socket.id));
+        const tempMyTimeout = (payload[myUserIndex]?.timeOuts)
+        setMyTimeouts(tempMyTimeout);
+        console.log(myTimeouts)
+    }
 
     function exitRoom() {
         socket.emit('leave room', roomId)
@@ -55,11 +79,15 @@ const RoomScreen = ({route, navigation}) => {
         setTimeout(() => {setShowAlert(false)},4000)
     };
 
+    const refresh = () => {
+        console.log("refresh")
+        socket.emit('update user list', roomId)
+    }
+
     const keyExtractor = (item, index) => index.toString()
 
     return (
         <View style={{flex: 1, backgroundColor: COLORS.BACKGROUND}}>
-
                 <AwesomeAlert
                     show={showAlert}
                     showProgress={loadingOdd}
@@ -84,7 +112,7 @@ const RoomScreen = ({route, navigation}) => {
                       rightIonIcon="arrow-forward" rightAction={() => goToEvents()} leftColor={COLORS.SECONDARY}
                       rightColor={COLORS.PRIMARY}/>
             <FlatList keyExtractor={keyExtractor} data={roomUsers}
-                      renderItem={({item}) => <SendOddModal alertTextAndLoading={alertTextAndLoading} alert={alertFunction} username={item.username}
+                      renderItem={({item}) => <SendOddModal refresh={refresh} myTimeOuts={myTimeouts} targetSocketId={item.id} alertTextAndLoading={alertTextAndLoading} alert={alertFunction} username={item.username}
                                                             roomId={item.roomId} socket={socket} color={item.color}
                                                             currentUser={username} sumOfZips={item.zips}/>}/>
         </View>

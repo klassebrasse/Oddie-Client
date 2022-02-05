@@ -1,25 +1,63 @@
-import React, {FC, useState} from "react";
-import {Modal, StyleSheet, Text, Pressable, View, TouchableOpacity, Dimensions} from "react-native";
-import {Button, ListItem, Slider} from "react-native-elements";
+import React, {useEffect, useState} from "react";
+import {Modal, StyleSheet, Text, Pressable, View, TouchableOpacity, Dimensions, FlatList} from "react-native";
+import {Button, Slider} from "react-native-elements";
 import Ionicons from "react-native-vector-icons/Ionicons";
 import {useMyTheme} from "../../Context/MyThemeContext";
-import AwesomeAlert from "react-native-awesome-alerts";
+import {Timer} from "../Timer";
 
 const  {width, height} = Dimensions.get('screen')
 
 
-const SendOddModal = ({username, roomId, socket, color, currentUser, sumOfZips, alert, alertTextAndLoading}) =>  {
+const SendOddModal = ({username, roomId, socket, color, currentUser, sumOfZips, alert, alertTextAndLoading, targetSocketId, myTimeOuts, refresh}) =>  {
     const {isDark, COLORS, toggleTheme} = useMyTheme();
     const [modalVisible, setModalVisible] = useState(false);
     const [zips, setZips] = useState(0);
+    const [oddTimeOut, setOddTimeOut] = useState(false)
+    const [index, setIndex] = useState(-1)
+    
+    function checkTimeOut() {
+        console.log("MYT TTIERIMMEIIE" + JSON.stringify(myTimeOuts))
+        if (myTimeOuts){
+            const isTimeOut = myTimeOuts.findIndex((obj => obj.socketId === targetSocketId));
+            console.log(isTimeOut + " --------INDEX")
+
+            if (isTimeOut >= 0){
+                console.log("TITIMIMTIMTIMIMASJNIODHASDUIHASUID")
+                console.log("TIMER: " + myTimeOuts[isTimeOut]?.time)
+                let time = new Timer()
+                time = myTimeOuts[isTimeOut]?.time
+                try {
+                    console.log("YÄÄÄKÅSS: " + time.time())
+                }catch (e) {
+                    console.log(e)
+                }
+
+
+
+                setOddTimeOut(true)
+                setIndex(isTimeOut)
+            }
+            else if(isTimeOut < 0) {
+                setOddTimeOut(false)
+            }
+        }
+
+    }
+
+    useEffect(() => {
+        checkTimeOut()
+    }, [myTimeOuts]);
 
     function sendOdds() {
         setModalVisible(false);
         alert(true, "Skickar odd");
+        refresh()
 
-        socket.emit('sending odds', username, zips, roomId, (callback) => {
+        socket.emit('sending odds', username, zips, roomId, targetSocketId, (callback) => {
             if (callback.oddsSent){
                 alertTextAndLoading(false, 'Odds skickad!');
+                console.log("odds skickad")
+                refresh();
             }
             else if(!callback.oddsSent){
                 alertTextAndLoading(false, 'Något gick fel')
@@ -121,6 +159,14 @@ const SendOddModal = ({username, roomId, socket, color, currentUser, sumOfZips, 
                 shadowRadius: 4,
                 elevation: 5
             }}>
+                {oddTimeOut ? (<View>
+                    <Text style={{fontSize: 30}}>TIMEOUT: </Text>
+                </View>) : (
+                    <View>
+                        <Text>INGEN TIMEOUT KBK</Text>
+                    </View>
+                )}
+                <Timer end={4}/>
                 <Text style={{color: "black", fontSize: 22}}>{username}</Text>
                 <View style={{position: "absolute", right: width/8, alignSelf: "center", flexDirection: "row"}} >
                     <Text>
