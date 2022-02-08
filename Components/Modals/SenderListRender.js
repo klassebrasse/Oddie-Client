@@ -7,11 +7,10 @@ import {useMyTheme} from "../../Context/MyThemeContext";
 const  {width, height} = Dimensions.get('screen')
 
 
-const ReceiverListRender = ({receiver, roomId,socket, sender, zips, senderUsername, status, oddId}) =>  {
+const SenderListRender = ({receiver, roomId,socket, sender, zips, senderUsername, status, oddId, receiverGuess, receiverOdd, senderGuess}) =>  {
     const {isDark, COLORS, toggleTheme} = useMyTheme();
     const [modalVisible, setModalVisible] = useState(false);
-    const [myOdds, setMyOdds] = useState(1);
-    const [myGuess, setMyGuess] = useState(1);
+    const [myGuess, setMyGuess] = useState(0);
 
     useEffect(() => {
 
@@ -20,27 +19,27 @@ const ReceiverListRender = ({receiver, roomId,socket, sender, zips, senderUserna
     function st(){
         switch(status) {
             case 0:
-                return COLORS.PRIMARY
+                return COLORS.SECONDARY
             case 1:
-                return COLORS.SECONDARY
-            case 2:
                 return COLORS.PRIMARY
+            case 2:
+                return "#8CEB97"
             case 3:
-                return COLORS.SECONDARY
+                return COLORS.PRIMARY
             default:
                 return "red"
         }
     }
 
-    function acceptOdd() {
-        if (myGuess > myOdds){
-            alert('Du kan inte gissa högre än oddsen')
+    function getStatusBool(){
+        if (status > 2){
+            return false
         }
-        else {
-            socket.emit('accept odd', oddId, myOdds, myGuess)
-            setModalVisible(!modalVisible)
-        }
+    }
 
+    function acceptOdd() {
+        socket.emit('sender guess', oddId, myGuess)
+        setModalVisible(!modalVisible)
     }
 
     return (
@@ -71,46 +70,52 @@ const ReceiverListRender = ({receiver, roomId,socket, sender, zips, senderUserna
                         shadowRadius: 4,
                         elevation: 5
                     }}>
-                        <Ionicons size={42} color="sandybrown" name="beer-outline"/>
-                        <Text style={{fontSize: 24, color: COLORS.CONTRAST, marginVertical: 20}}>{senderUsername} oddsade dig </Text>
-                        <Text style={{fontSize: 16, color: COLORS.CONTRAST}}>Vad är oddsen? 1-10</Text>
-                        <Text style={{color: COLORS.PRIMARY, fontSize: 18}}>{myOdds}</Text>
-                        <Slider
-                            thumbStyle={{backgroundColor: COLORS.PRIMARY, width: 30, height: 30}}
-                            step={1}
-                            style={{width: width/1.5, height: 40}}
-                            minimumValue={1}
-                            maximumValue={10}
-                            minimumTrackTintColor={COLORS.PRIMARY}
-                            maximumTrackTintColor="#000000"
-                            onValueChange={(odds) => setMyOdds(odds)}
-                            value={myOdds}
-                        />
+                        {status !== 2 ? (
+                            <>
+                                <Ionicons size={42} color="sandybrown" name="beer-outline"/>
+                                <Text style={{fontSize: 24, color: COLORS.CONTRAST, marginVertical: 20}}>Du oddsade {receiver} </Text>
+                                <Text style={{fontSize: 16, color: COLORS.CONTRAST}}>Gissa emellan 1-{receiverOdd}</Text>
+                                <Text style={{color: COLORS.PRIMARY, fontSize: 18}}>{myGuess}</Text>
+                                <Slider
+                                    thumbStyle={{backgroundColor: COLORS.PRIMARY, width: 30, height: 30}}
+                                    step={1}
+                                    style={{width: width/1.5, height: 40}}
+                                    minimumValue={0}
+                                    maximumValue={receiverOdd}
+                                    minimumTrackTintColor={COLORS.PRIMARY}
+                                    maximumTrackTintColor="#000000"
+                                    onValueChange={(odds) => setMyGuess(odds)}
+                                />
+                                <Button
+                                    title="Skicka oddsen"
+                                    buttonStyle={{
+                                        backgroundColor: COLORS.PRIMARY,
+                                        borderRadius: 5,
+                                    }}
+                                    containerStyle={{
+                                        marginTop: 20
+                                    }}
+                                    onPress={() => acceptOdd()}
+                                />
+                            </>
+                        ) : (
+                            <>
+                                <View style={{alignItems: "center", marginVertical: 50}}>
+                                    <Text style={{fontSize: 25, color: COLORS.PRIMARY}}>
+                                        Du gissade {senderGuess}
+                                    </Text>
+                                    <Text style={{fontSize: 25, color: COLORS.PRIMARY}}>
+                                        {receiver} gissade {receiverGuess}
+                                    </Text>
+                                </View>
+                                {senderGuess === receiverGuess ? (
+                                    <Text style={{fontSize: 22, marginHorizontal: 30, color: COLORS.PRIMARY}}>{receiver} ska dricka {zips} klunkar!</Text>
+                                ) : (
+                                    <Text style={{fontSize: 22, marginHorizontal: 30, color: COLORS.PRIMARY}}>{receiver} klarade sig undan denna gången!</Text>
+                                )}
+                            </>
+                        )}
 
-                        <Text style={{fontSize: 16, color: COLORS.CONTRAST, marginTop: 20}}>Din gissning</Text>
-                        <Text style={{color: COLORS.PRIMARY, fontSize: 18}}>{myGuess}</Text>
-                        <Slider
-                            thumbStyle={{backgroundColor: COLORS.PRIMARY, width: 30, height: 30}}
-                            step={1}
-                            style={{width: width/1.5, height: 40}}
-                            minimumValue={1}
-                            maximumValue={10}
-                            minimumTrackTintColor={COLORS.PRIMARY}
-                            maximumTrackTintColor="#000000"
-                            onValueChange={(odds) => setMyGuess(odds)}
-                            value={myGuess}
-                        />
-                        <Button
-                            title="Skicka oddsen"
-                            buttonStyle={{
-                                backgroundColor: COLORS.PRIMARY,
-                                borderRadius: 5,
-                            }}
-                            containerStyle={{
-                                marginTop: 20
-                            }}
-                            onPress={() => acceptOdd()}
-                        />
                         <View style={{height:20}}/>
                         <Button
                             title="Gå tillbaka"
@@ -130,7 +135,7 @@ const ReceiverListRender = ({receiver, roomId,socket, sender, zips, senderUserna
                     </View>
                 </View>
             </Modal>
-            <TouchableOpacity disabled={status === 1 } onPress={() => setModalVisible(true)} style={{
+            <TouchableOpacity disabled={status === 0 } onPress={() => setModalVisible(true)} style={{
                 flexDirection: "row",
                 width: width / 1.1,
                 alignSelf: 'center',
@@ -149,9 +154,9 @@ const ReceiverListRender = ({receiver, roomId,socket, sender, zips, senderUserna
                 elevation: 5
             }}>
 
-                <Text style={{color: "black", fontSize: 20, fontWeight: "bold"}}>{status}{senderUsername} </Text>
-                <Text style={{color: "black", fontSize: 20}}>oddsade dig </Text>
-                <Text style={{color: "black", fontSize: 20}}>{zips} klunkar</Text>
+
+                <Text style={{color: "black", fontSize: 20}}>{status}Du oddsade </Text>
+                <Text style={{color: "black", fontSize: 20, fontWeight: "bold"}}>{receiver}</Text>
                 <View style={{position: "absolute", right: width/8, alignSelf: "center", flexDirection: "row"}} >
                     <Text>
                         {zips}x
@@ -223,4 +228,4 @@ const styles = StyleSheet.create({
     },
 });
 
-export default ReceiverListRender;
+export default SenderListRender;

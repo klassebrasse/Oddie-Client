@@ -9,6 +9,7 @@ import {useContext, useEffect, useState} from "react";
 import {PushNotificationContext} from "../Context/PushNotificationContext";
 import ReceiverListRender from "../Components/Modals/ReceiverListRender";
 import {Tab, TabView} from "react-native-elements";
+import SenderListRender from "../Components/Modals/SenderListRender";
 
 const  {width, height} = Dimensions.get('screen')
 
@@ -111,14 +112,14 @@ const EventsScreen = ({route, navigation}) => {
                                                                           roomId={item.roomId} socket={socket}
                                                                           sender={item.sender} senderUsername={item.senderUsername} zips={item.zips}/>}/>
                 </TabView.Item>
-                <TabView.Item style={{ backgroundColor: 'blue', width: '100%' }}>
+                <TabView.Item style={{width: '100%' }}>
                     <FlatList keyExtractor={keyExtractor}
                               data={sentOdds}
-                              renderItem={({item}) => <ReceiverListRender receiver={item.receiver}
-                                                                          roomId={item.roomId} socket={socket}
-                                                                          sender={item.sender} zips={item.zips}/>}/>
+                              renderItem={({item}) => <SenderListRender receiver={item.receiver} status={item.status} oddId={item.id} receiverOdd={item.receiverOdd}
+                                                                    roomId={item.roomId} socket={socket} receiverGuess={item.receiverGuess} senderGuess={item.senderGuess}
+                                                                    sender={item.sender} senderUsername={item.senderUsername} zips={item.zips}/>}/>
                 </TabView.Item>
-                <TabView.Item style={{ backgroundColor: 'green', width: '100%' }}>
+                <TabView.Item style={{width: '100%'}}>
                     <FlatList keyExtractor={keyExtractor}
                               data={odds}
                               renderItem={({item}) => <ReceiverListRender receiver={item.receiver}
