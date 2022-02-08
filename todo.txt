@@ -1,5 +1,6 @@
 Man ansluter till servern direkt man startar appen, inte bra?????
 BottomSheet elements, settings startScrteen
-Göra Callbacks till servern istället för vanliga emits (roomUsers)
+Göra Callbacks till server istället för vanliga emits (roomUsers)
 TIMER
+Ta bort odds till användare som disconnect
 APPLE TV!!!

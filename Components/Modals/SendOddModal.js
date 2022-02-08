@@ -38,6 +38,7 @@ const SendOddModal = ({username, roomId, socket, color, currentUser, sumOfZips, 
     }
 
     useEffect(() => {
+        console.log("TIMEOUT: " + oddTimeOut)
         checkTimeOut()
     }, [myTimeOuts]);
 
@@ -136,7 +137,7 @@ const SendOddModal = ({username, roomId, socket, color, currentUser, sumOfZips, 
                     </View>
                 </View>
             </Modal>
-            <TouchableOpacity disabled={username === currentUser} onPress={() => setModalVisible(true)} style={{
+            <TouchableOpacity disabled={username === currentUser || oddTimeOut} onPress={() => setModalVisible(true)} style={{
                 flexDirection: "row",
                 width: width / 1.1,
                 alignSelf: 'center',
@@ -152,13 +153,6 @@ const SendOddModal = ({username, roomId, socket, color, currentUser, sumOfZips, 
                 shadowRadius: 4,
                 elevation: 5
             }}>
-                {oddTimeOut ? (<View>
-                    <Text style={{fontSize: 30}}>TIMEOUT: </Text>
-                </View>) : (
-                    <View>
-                        <Text>INGEN TIMEOUT KBK</Text>
-                    </View>
-                )}
                 <Text style={{color: "black", fontSize: 22}}>{username}</Text>
                 <View style={{position: "absolute", right: width/8, alignSelf: "center", flexDirection: "row"}} >
                     <Text>

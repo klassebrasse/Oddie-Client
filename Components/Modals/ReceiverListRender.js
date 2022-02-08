@@ -3,13 +3,11 @@ import {Modal, StyleSheet, Text, Pressable, View, TouchableOpacity, Dimensions, 
 import {Button, Slider} from "react-native-elements";
 import Ionicons from "react-native-vector-icons/Ionicons";
 import {useMyTheme} from "../../Context/MyThemeContext";
-import {Timer} from "../Timer";
-import {socket} from "../../Constants/Socket";
 
 const  {width, height} = Dimensions.get('screen')
 
 
-const SendOddModal = ({receiver, roomId,socket, sender, zips}) =>  {
+const SendOddModal = ({receiver, roomId,socket, sender, zips, senderUsername, status, oddId}) =>  {
     const {isDark, COLORS, toggleTheme} = useMyTheme();
     const [modalVisible, setModalVisible] = useState(false);
     const [myOdds, setMyOdds] = useState(0);
@@ -17,6 +15,26 @@ const SendOddModal = ({receiver, roomId,socket, sender, zips}) =>  {
     useEffect(() => {
 
     }, []);
+
+    function st(){
+        switch(status) {
+            case 0:
+                return COLORS.PRIMARY
+            case 1:
+                return COLORS.SECONDARY
+            case 2:
+                return COLORS.PRIMARY
+            case 3:
+                return COLORS.SECONDARY
+            default:
+                return "red"
+        }
+    }
+
+    function acceptOdd() {
+        socket.emit('accept odd', oddId)
+        setModalVisible(!modalVisible)
+    }
 
     return (
         <View style={styles.centeredView}>
@@ -47,36 +65,30 @@ const SendOddModal = ({receiver, roomId,socket, sender, zips}) =>  {
                         elevation: 5
                     }}>
                         <Ionicons size={42} color="sandybrown" name="beer-outline"/>
-                        <Text style={{fontSize: 24, color: COLORS.CONTRAST}}>{sender} oddsade dig </Text>
-                        <Text style={{color: COLORS.PRIMARY, fontSize: 18}}>{zips}</Text>
+                        <Text style={{fontSize: 24, color: COLORS.CONTRAST, marginVertical: 20}}>{senderUsername} oddsade dig </Text>
+                        <Text style={{fontSize: 16, color: COLORS.CONTRAST}}>Vad är oddsen? 1-10</Text>
+                        <Text style={{color: COLORS.PRIMARY, fontSize: 18}}>{myOdds}</Text>
                         <Slider
                             thumbStyle={{backgroundColor: COLORS.PRIMARY, width: 30, height: 30}}
                             step={1}
                             style={{width: width/1.5, height: 40}}
                             minimumValue={0}
-                            maximumValue={15}
+                            maximumValue={10}
                             minimumTrackTintColor={COLORS.PRIMARY}
                             maximumTrackTintColor="#000000"
                             onValueChange={(odds) => setMyOdds(odds)}
                         />
-                        <TouchableOpacity
-                            style={{
-                                marginTop: height/20,
+                        <Button
+                            title="Skicka oddsen"
+                            buttonStyle={{
                                 backgroundColor: COLORS.PRIMARY,
                                 borderRadius: 5,
-                                padding: 10,
-                                elevation: 2
                             }}
-
-                        >
-                            <View style={{flexDirection: "row"}}>
-                                <Text style={{color: COLORS.BACKGROUND, fontWeight: "bold", textAlign: "center", fontSize: 18}}>Vad är oddsen? </Text>
-                                <Text style={{fontWeight: "bold", color: COLORS.CONTRAST, fontSize: 18}}>sd</Text>
-                                <Text style={{color: COLORS.BACKGROUND, fontWeight: "bold", textAlign: "center", fontSize: 18}}>HAJA</Text>
-                            </View>
-
-
-                        </TouchableOpacity>
+                            containerStyle={{
+                                marginTop: 20
+                            }}
+                            onPress={() => acceptOdd()}
+                        />
                         <View style={{height:20}}/>
                         <Button
                             title="Gå tillbaka"
@@ -96,24 +108,28 @@ const SendOddModal = ({receiver, roomId,socket, sender, zips}) =>  {
                     </View>
                 </View>
             </Modal>
-            <TouchableOpacity onPress={() => setModalVisible(true)} style={{
+            <TouchableOpacity disabled={status === 1 } onPress={() => setModalVisible(true)} style={{
                 flexDirection: "row",
                 width: width / 1.1,
                 alignSelf: 'center',
                 marginHorizontal: 10,
                 padding: 16,
                 borderRadius: 10,
-                backgroundColor: "red",
+                backgroundColor: st(),
                 shadowOffset: {
                     width: 1.5,
                     height: 2
                 },
+                minHeight: height/20,
+                maxHeight: height/16,
                 shadowOpacity: 0.25,
                 shadowRadius: 4,
                 elevation: 5
             }}>
 
-                <Text style={{color: "black", fontSize: 22}}>{sender}</Text>
+                <Text style={{color: "black", fontSize: 20, fontWeight: "bold"}}>{status}{senderUsername} </Text>
+                <Text style={{color: "black", fontSize: 20}}>oddsade dig </Text>
+                <Text style={{color: "black", fontSize: 20}}>{zips} klunkar</Text>
                 <View style={{position: "absolute", right: width/8, alignSelf: "center", flexDirection: "row"}} >
                     <Text>
                         {zips}x

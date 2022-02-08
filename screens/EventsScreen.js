@@ -1,4 +1,4 @@
-import {Dimensions, FlatList, TouchableOpacity, View} from "react-native";
+import {Dimensions, FlatList, Text, TouchableOpacity, View} from "react-native";
 import MyHeader from "../Components/MyHeader";
 import {useMyTheme} from "../Context/MyThemeContext";
 import AwesomeAlert from "react-native-awesome-alerts";
@@ -8,6 +8,7 @@ import * as React from "react";
 import {useContext, useEffect, useState} from "react";
 import {PushNotificationContext} from "../Context/PushNotificationContext";
 import ReceiverListRender from "../Components/Modals/ReceiverListRender";
+import {Tab, TabView} from "react-native-elements";
 
 const  {width, height} = Dimensions.get('screen')
 
@@ -21,15 +22,34 @@ const EventsScreen = ({route, navigation}) => {
     const [alertText, setAlertText] = useState("sss")
     const [loadingOdd, setLoadingOdd] = useState(true)
     const [odds, setOdds] = useState([])
+    const [receivedOdds, setReceivedOdds] = useState([])
+    const [sentOdds, setSentOdds] = useState([])
+    const [index, setIndex] = React.useState(0);
 
     useEffect(() => {
 
         socket.emit('get odds', roomId, (response) => {
-            setOdds(response.oddsList)
+            const res = response.oddsList
+
+            const myReceivedOdds = res.filter((o) => o.receiverSocketId === socket.id)
+            const mySentOdds = res.filter((o) => o.sender === socket.id)
+            setOdds(res)
+            setReceivedOdds(myReceivedOdds)
+            setSentOdds(mySentOdds)
+        })
+
+        socket.on('update list', (res) => {
+            const myReceivedOdds = res.filter((o) => o.receiverSocketId === socket.id)
+            const mySentOdds = res.filter((o) => o.sender === socket.id)
+            setOdds(res)
+            setReceivedOdds(myReceivedOdds)
+            setSentOdds(mySentOdds)
         })
 
         return () => {
             setOdds([])
+            setSentOdds([])
+            setReceivedOdds([])
         }
     }, []);
 
@@ -57,11 +77,55 @@ const EventsScreen = ({route, navigation}) => {
             />
             <MyHeader title="Händelser" leftIonIcon="arrow-back" leftAction={() => navigation.goBack()}  leftColor={COLORS.PRIMARY} rightColor={COLORS.SECONDARY}/>
 
+            <Tab
+                value={index}
+                onChange={(e) => setIndex(e)}
+                style={{backgroundColor: "red"}}
+                indicatorStyle={{
+                    backgroundColor: COLORS.PRIMARY,
+                    height: 5,
+                }}
+            >
+                <Tab.Item
+                    title="Mottagna"
+                    titleStyle={{ fontSize: 12, color: index === 0 ? COLORS.PRIMARY : "white" }}
+                    icon={{ name: 'move-to-inbox', type: 'material', color: index === 0 ? COLORS.PRIMARY : "white"  }}
+                />
+                <Tab.Item
+                    title="Skickade"
+                    titleStyle={{ fontSize: 12, color: index === 1 ? COLORS.PRIMARY : "white"  }}
+                    icon={{ name: 'outbox', type: 'material', color: index === 1 ? COLORS.PRIMARY : "white"  }}
+                />
+                <Tab.Item
+                    title="Alla odds"
+                    titleStyle={{ fontSize: 12, color: index === 2 ? COLORS.PRIMARY : "white"  }}
+                    icon={{ name: 'library-books', type: 'material', color: index === 2 ? COLORS.PRIMARY : "white"  }}
+                />
+            </Tab>
 
-                <FlatList keyExtractor={keyExtractor} data={odds}
-                          renderItem={({item}) => <ReceiverListRender receiver={item.receiver}
-                                                                roomId={item.roomId} socket={socket}
-                                                                sender={item.sender} zips={item.zips}/>}/>
+            <TabView value={index} onChange={setIndex} animationType="spring">
+                <TabView.Item style={{width: '100%' }}>
+                    <FlatList keyExtractor={keyExtractor}
+                              data={receivedOdds}
+                              renderItem={({item}) => <ReceiverListRender receiver={item.receiver} status={item.status} oddId={item.id}
+                                                                          roomId={item.roomId} socket={socket}
+                                                                          sender={item.sender} senderUsername={item.senderUsername} zips={item.zips}/>}/>
+                </TabView.Item>
+                <TabView.Item style={{ backgroundColor: 'blue', width: '100%' }}>
+                    <FlatList keyExtractor={keyExtractor}
+                              data={sentOdds}
+                              renderItem={({item}) => <ReceiverListRender receiver={item.receiver}
+                                                                          roomId={item.roomId} socket={socket}
+                                                                          sender={item.sender} zips={item.zips}/>}/>
+                </TabView.Item>
+                <TabView.Item style={{ backgroundColor: 'green', width: '100%' }}>
+                    <FlatList keyExtractor={keyExtractor}
+                              data={odds}
+                              renderItem={({item}) => <ReceiverListRender receiver={item.receiver}
+                                                                          roomId={item.roomId} socket={socket}
+                                                                          sender={item.sender} zips={item.zips}/>}/>
+                </TabView.Item>
+            </TabView>
         </View>
     )
 }
