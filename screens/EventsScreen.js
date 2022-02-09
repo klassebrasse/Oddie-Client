@@ -10,6 +10,7 @@ import {PushNotificationContext} from "../Context/PushNotificationContext";
 import ReceiverListRender from "../Components/Modals/ReceiverListRender";
 import {Tab, TabView} from "react-native-elements";
 import SenderListRender from "../Components/Modals/SenderListRender";
+import AllOddsRender from "../Components/Modals/AllOddsRender";
 
 const  {width, height} = Dimensions.get('screen')
 
@@ -89,18 +90,18 @@ const EventsScreen = ({route, navigation}) => {
             >
                 <Tab.Item
                     title="Mottagna"
-                    titleStyle={{ fontSize: 12, color: index === 0 ? COLORS.PRIMARY : "white" }}
-                    icon={{ name: 'move-to-inbox', type: 'material', color: index === 0 ? COLORS.PRIMARY : "white"  }}
+                    titleStyle={{ fontSize: 12, color: index === 0 ? COLORS.PRIMARY : COLORS.SECONDARY}}
+                    icon={{ name: 'move-to-inbox', type: 'material', color: index === 0 ? COLORS.PRIMARY : COLORS.SECONDARY}}
                 />
                 <Tab.Item
                     title="Skickade"
-                    titleStyle={{ fontSize: 12, color: index === 1 ? COLORS.PRIMARY : "white"  }}
-                    icon={{ name: 'outbox', type: 'material', color: index === 1 ? COLORS.PRIMARY : "white"  }}
+                    titleStyle={{ fontSize: 12, color: index === 1 ? COLORS.PRIMARY : COLORS.SECONDARY}}
+                    icon={{ name: 'outbox', type: 'material', color: index === 1 ? COLORS.PRIMARY : COLORS.SECONDARY}}
                 />
                 <Tab.Item
                     title="Alla odds"
-                    titleStyle={{ fontSize: 12, color: index === 2 ? COLORS.PRIMARY : "white"  }}
-                    icon={{ name: 'library-books', type: 'material', color: index === 2 ? COLORS.PRIMARY : "white"  }}
+                    titleStyle={{ fontSize: 12, color: index === 2 ? COLORS.PRIMARY : COLORS.SECONDARY}}
+                    icon={{ name: 'library-books', type: 'material', color: index === 2 ? COLORS.PRIMARY : COLORS.SECONDARY}}
                 />
             </Tab>
 
@@ -108,8 +109,8 @@ const EventsScreen = ({route, navigation}) => {
                 <TabView.Item style={{width: '100%' }}>
                     <FlatList keyExtractor={keyExtractor}
                               data={receivedOdds}
-                              renderItem={({item}) => <ReceiverListRender receiver={item.receiver} status={item.status} oddId={item.id}
-                                                                          roomId={item.roomId} socket={socket}
+                              renderItem={({item}) => <ReceiverListRender receiver={item.receiver} status={item.status} oddId={item.id} receiverOdd={item.receiverOdd}
+                                                                          roomId={item.roomId} socket={socket} receiverGuess={item.receiverGuess} senderGuess={item.senderGuess}
                                                                           sender={item.sender} senderUsername={item.senderUsername} zips={item.zips}/>}/>
                 </TabView.Item>
                 <TabView.Item style={{width: '100%' }}>
@@ -122,9 +123,9 @@ const EventsScreen = ({route, navigation}) => {
                 <TabView.Item style={{width: '100%'}}>
                     <FlatList keyExtractor={keyExtractor}
                               data={odds}
-                              renderItem={({item}) => <ReceiverListRender receiver={item.receiver}
-                                                                          roomId={item.roomId} socket={socket}
-                                                                          sender={item.sender} zips={item.zips}/>}/>
+                              renderItem={({item}) => <AllOddsRender receiver={item.receiver} status={item.status} oddId={item.id} receiverOdd={item.receiverOdd}
+                                                                     roomId={item.roomId} socket={socket} receiverGuess={item.receiverGuess} senderGuess={item.senderGuess}
+                                                                     sender={item.sender} senderUsername={item.senderUsername} zips={item.zips}/>}/>
                 </TabView.Item>
             </TabView>
         </View>

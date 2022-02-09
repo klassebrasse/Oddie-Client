@@ -1,6 +1,7 @@
 Man ansluter till servern direkt man startar appen, inte bra?????
 BottomSheet elements, settings startScrteen
-Göra Callbacks till server istället för vanliga emits (roomUsers)
 TIMER
 Ta bort odds till användare som disconnect
+
+status 3 kan sender skicka notification
 APPLE TV!!!
