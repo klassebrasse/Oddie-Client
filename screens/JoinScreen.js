@@ -5,13 +5,15 @@ import {Button, Input} from "react-native-elements";
 import MyHeader from "../Components/MyHeader";
 import {useMyTheme} from "../Context/MyThemeContext";
 import SendOddModal from "../Components/Modals/SendOddModal";
-import {socket} from "../Constants/Socket";
+import socket from "../Constants/Socket";
+import {io, Socket} from "socket.io-client";
 const randomColor = require('randomcolor');
 
 const {width, height} = Dimensions.get('screen')
 
 const JoinScreen = ({navigation}) => {
 
+    //const socket = io.connect()
     const {isDark, COLORS, toggleTheme} = useMyTheme();
 
     const [username, setUsername] = useState(null);

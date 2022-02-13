@@ -1,7 +1,7 @@
 import * as React from "react";
 import {useContext, useEffect, useState} from "react";
 import {Dimensions, FlatList, StyleSheet, Text, TouchableOpacity, View} from "react-native";
-import {socket} from "../Constants/Socket";
+import socket from "../Constants/Socket";
 import MyHeader from "../Components/MyHeader";
 import {PushNotificationContext} from "../Context/PushNotificationContext";
 import {useMyTheme} from "../Context/MyThemeContext";

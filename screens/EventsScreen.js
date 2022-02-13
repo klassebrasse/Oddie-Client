@@ -3,7 +3,7 @@ import MyHeader from "../Components/MyHeader";
 import {useMyTheme} from "../Context/MyThemeContext";
 import AwesomeAlert from "react-native-awesome-alerts";
 import SendOddModal from "../Components/Modals/SendOddModal";
-import {socket} from "../Constants/Socket";
+import socket from "../Constants/Socket";
 import * as React from "react";
 import {useContext, useEffect, useState} from "react";
 import {PushNotificationContext} from "../Context/PushNotificationContext";

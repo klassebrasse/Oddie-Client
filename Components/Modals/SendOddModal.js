@@ -14,7 +14,13 @@ const SendOddModal = ({username, roomId, socket, color, currentUser, sumOfZips, 
     const [zips, setZips] = useState(0);
     const [oddTimeOut, setOddTimeOut] = useState(false)
     const [index, setIndex] = useState(-1)
-    
+    const [timer, setTimer] = useState()
+
+    const getTimeFromTimerComponent = () => {
+        setOddTimeOut(false)
+        setTimer(0)
+    }
+
     function checkTimeOut() {
         console.log("MYT TTIERIMMEIIE" + JSON.stringify(myTimeOuts))
         if (myTimeOuts){
@@ -29,6 +35,7 @@ const SendOddModal = ({username, roomId, socket, color, currentUser, sumOfZips, 
 
                 setOddTimeOut(true)
                 setIndex(isTimeOut)
+                setTimer(myTimeOuts[isTimeOut].time)
             }
             else if(isTimeOut < 0) {
                 setOddTimeOut(false)
@@ -144,7 +151,7 @@ const SendOddModal = ({username, roomId, socket, color, currentUser, sumOfZips, 
                 marginHorizontal: 10,
                 padding: 16,
                 borderRadius: 10,
-                backgroundColor: color,
+                backgroundColor: oddTimeOut?  COLORS.SECONDARY : color,
                 shadowOffset: {
                     width: 1.5,
                     height: 2
@@ -153,7 +160,13 @@ const SendOddModal = ({username, roomId, socket, color, currentUser, sumOfZips, 
                 shadowRadius: 4,
                 elevation: 5
             }}>
-                <Text style={{color: "black", fontSize: 22}}>{username}</Text>
+                <View>
+                    <Text style={{color: "black", fontSize: 22}}>{username}</Text>
+                    {timer &&
+                    <Timer getTimeFromTimerComponent={getTimeFromTimerComponent} timer={timer}/>
+                    }
+                </View>
+
                 <View style={{position: "absolute", right: width/8, alignSelf: "center", flexDirection: "row"}} >
                     <Text>
                         {sumOfZips}x
