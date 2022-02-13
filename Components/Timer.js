@@ -5,6 +5,7 @@ export const Timer = ({ timer, getTimeFromTimerComponent }) => {
     const [timeLeft, setTimeLeft] = useState()
 
 
+
     useEffect(()=>{
         setInterval(function(){
             const newTime = new Date();

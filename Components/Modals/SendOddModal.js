@@ -13,8 +13,9 @@ const SendOddModal = ({username, roomId, socket, color, currentUser, sumOfZips, 
     const [modalVisible, setModalVisible] = useState(false);
     const [zips, setZips] = useState(0);
     const [oddTimeOut, setOddTimeOut] = useState(false)
-    const [index, setIndex] = useState(-1)
     const [timer, setTimer] = useState()
+
+    const [duration, setDuration] = useState(0)
 
     const getTimeFromTimerComponent = () => {
         setOddTimeOut(false)
@@ -28,14 +29,7 @@ const SendOddModal = ({username, roomId, socket, color, currentUser, sumOfZips, 
             console.log(isTimeOut + " --------INDEX")
 
             if (isTimeOut >= 0){
-                //console.log("TITIMIMTIMTIMIMASJNIODHASDUIHASUID")
-                //console.log("TIMER: " + myTimeOuts[isTimeOut]?.time)
-                //let time = new Timer()
-                //time = myTimeOuts[isTimeOut]?.time
-
                 setOddTimeOut(true)
-                setIndex(isTimeOut)
-                setTimer(myTimeOuts[isTimeOut].time)
             }
             else if(isTimeOut < 0) {
                 setOddTimeOut(false)
@@ -46,13 +40,19 @@ const SendOddModal = ({username, roomId, socket, color, currentUser, sumOfZips, 
 
     useEffect(() => {
         console.log("TIMEOUT: " + oddTimeOut)
+        socket.on('timer', (id, duration) => {
+            if (targetSocketId === id){
+                setDuration(duration)
+                console.log("duration" + duration)
+            }
+        })
         checkTimeOut()
     }, [myTimeOuts]);
 
     function sendOdds() {
         setModalVisible(false);
         alert(true, "Skickar odd");
-        refresh()
+//        refresh()
 
         socket.emit('sending odds', username, zips, roomId, targetSocketId, (callback) => {
             if (callback.oddsSent){
@@ -162,8 +162,8 @@ const SendOddModal = ({username, roomId, socket, color, currentUser, sumOfZips, 
             }}>
                 <View>
                     <Text style={{color: "black", fontSize: 22}}>{username}</Text>
-                    {timer &&
-                    <Timer getTimeFromTimerComponent={getTimeFromTimerComponent} timer={timer}/>
+                    {duration > 0 &&
+                        <Text>{duration}</Text>
                     }
                 </View>
 
