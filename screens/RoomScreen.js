@@ -27,6 +27,7 @@ const RoomScreen = ({route, navigation}) => {
             time: Timer,
         },
     ])
+    const [exitAlert, setExitAlert] = useState(false)
 
     useEffect(() => {
         socket.connect()
@@ -109,8 +110,38 @@ const RoomScreen = ({route, navigation}) => {
                     }
                 />
 
+                <AwesomeAlert
+                    show={exitAlert}
+                    title="Vill du lämna?"
+                    showConfirmButton={true}
+                    closeOnTouchOutside={false}
+                    showCancelButton={true}
+                    cancelText="Ja, lämna"
+                    confirmText="Avbryt"
+                    confirmButtonColor={COLORS.SECONDARY}
+                    cancelButtonColor={COLORS.PRIMARY}
+                    onConfirmPressed={() => {setExitAlert(!exitAlert)}}
+                    onCancelPressed={() => {exitRoom()}}
+                    contentContainerStyle={{
+                        backgroundColor: COLORS.SECONDBACKGROUND,
+                        elevation: 5,
+                        shadowOffset: {
+                            width: 1.5,
+                            height: 2
+                        },
+                        shadowOpacity: 0.25,
+                        shadowRadius: 4,
+                        padding: 15
+                    }}
+                    cancelButtonStyle={{paddingVertical: 12, paddingHorizontal: 10, marginRight: 30, marginTop: 20}}
+                    confirmButtonStyle={{paddingVertical: 12, paddingHorizontal: 10}}
+                    titleStyle={{color: COLORS.PRIMARY}}
+                    cancelButtonTextStyle={{color: COLORS.BACKGROUND}}
+                    confirmButtonTextStyle={{color: COLORS.BACKGROUND}}
 
-            <MyHeader title={"Rum: " + roomId} leftIonIcon="arrow-back" leftAction={() => exitRoom()}
+                    />
+
+            <MyHeader title={"Rum: " + roomId} leftIonIcon="arrow-back" leftAction={() => setExitAlert(!exitAlert)}
                       rightIonIcon="arrow-forward" rightAction={() => goToEvents()} leftColor={COLORS.SECONDARY}
                       rightColor={COLORS.PRIMARY}/>
             <FlatList keyExtractor={keyExtractor} data={roomUsers}
