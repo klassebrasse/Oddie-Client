@@ -32,9 +32,7 @@ const AllOddsRender = ({receiver, roomId,socket, sender, zips, senderUsername, s
         }
     }
 
-    function oddsDone() {
-        socket.emit('odd done', oddId)
-    }
+
 
     function st(){
         switch(status) {

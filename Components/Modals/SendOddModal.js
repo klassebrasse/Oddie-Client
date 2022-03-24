@@ -3,6 +3,7 @@ import {Modal, StyleSheet, Text, Pressable, View, TouchableOpacity, Dimensions, 
 import {Button, Slider} from "react-native-elements";
 import Ionicons from "react-native-vector-icons/Ionicons";
 import {useMyTheme} from "../../Context/MyThemeContext";
+import {Timer} from "timer-node";
 
 const  {width, height} = Dimensions.get('screen')
 
@@ -15,10 +16,8 @@ const SendOddModal = ({username, roomId, socket, color, currentUser, sumOfZips, 
     const [duration, setDuration] = useState(0)
 
     function checkTimeOut() {
-        console.log("MYT TTIERIMMEIIE" + JSON.stringify(myTimeOuts))
         if (myTimeOuts){
             const isTimeOut = myTimeOuts.findIndex((obj => obj.socketId === targetSocketId));
-            console.log(isTimeOut + " --------INDEX")
 
             if (isTimeOut >= 0){
                 setOddTimeOut(true)
@@ -27,7 +26,6 @@ const SendOddModal = ({username, roomId, socket, color, currentUser, sumOfZips, 
                 setOddTimeOut(false)
             }
         }
-
     }
 
     useEffect(() => {

@@ -3,5 +3,5 @@ BottomSheet elements, settings startScrteen
 TIMER
 Ta bort odds till användare som disconnect
 
-status 3 kan sender skicka notification
+status 3 renderar fel på client
 APPLE TV!!!

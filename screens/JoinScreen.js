@@ -1,12 +1,13 @@
 import * as React from "react";
 import {useEffect, useState} from "react";
-import {Dimensions, Text, View} from 'react-native';
+import {Dimensions, Text, TouchableOpacity, View} from 'react-native';
 import {Button, Input} from "react-native-elements";
 import MyHeader from "../Components/MyHeader";
 import {useMyTheme} from "../Context/MyThemeContext";
 import SendOddModal from "../Components/Modals/SendOddModal";
 import socket from "../Constants/Socket";
 import {io, Socket} from "socket.io-client";
+import AwesomeAlert from "react-native-awesome-alerts";
 const randomColor = require('randomcolor');
 
 const {width, height} = Dimensions.get('screen')
@@ -18,6 +19,7 @@ const JoinScreen = ({navigation}) => {
 
     const [username, setUsername] = useState(null);
     const [roomId, setRoomId] = useState(null);
+    const [loading, setLoading] = useState(false)
 
     const customColor = randomColor({
         hue: '#00C1CB'
@@ -28,29 +30,54 @@ const JoinScreen = ({navigation}) => {
     }, []);
 
     async function joinRoom() {
-        socket.emit('check username', roomId, username, (response) => {
-            console.log("responsen är: " + response.usernameIsOk)
-            if (response.usernameIsOk){
-                if (roomId && username) {
-                    navigation.navigate('Room', {
-                        username: username,
-                        roomId: roomId,
-                        color: customColor,
+        if (!roomId && !username) alert("Fyll i Användarnamn och Lobby-kod")
+        else if (!roomId) alert("Fyll i Lobby-kod")
+        else if (!username) alert("Fyll i Användarnamn")
+        else {
+            setLoading(true)
+            socket.emit('check username', roomId, username, (response) => {
+                if (response.usernameIsOk){
+                    if (roomId && username) {
+                        navigation.navigate('Room', {
+                            username: username,
+                            roomId: roomId,
+                            color: customColor,
 
-                    });
-                } else if (!roomId && !username) alert("Fyll i Användarnamn och Lobby-kod")
-                else if (!roomId) alert("Fyll i Lobby-kod")
-                else if (!username) alert("Fyll i Användarnamn")
-            }
-            else {
-                alert("Användarnamn är upptaget")
-            }
-        })
+                        });
+                        setLoading(false)
+                    }
+                }
+                else {
+                    setLoading(false)
+                    alert("Användarnamn är upptaget")
+                }
+            })
+        }
     }
 
 //"arrow-forward"
     return (
         <View style={{alignItems: "center", backgroundColor: COLORS.BACKGROUND, flex: 1}}>
+
+            <AwesomeAlert
+                show={loading}
+                showProgress={loading}
+                title="Deltar"
+                message="(Tryck för att avbryta)"
+                closeOnTouchOutside={false}
+                closeOnHardwareBackPress={false}
+                alertContainerStyle={{
+                    backgroundColor: "rgba(0,193,203,0.24)"
+                }}
+                titleStyle={{fontSize: 20, color: COLORS.CONTRAST}}
+                contentContainerStyle={{
+                    backgroundColor: COLORS.BACKGROUND
+                }}
+                customView={
+                    <TouchableOpacity style={{height: height, width: width, position: 'absolute'}} onPress={() => setLoading(false)}/>
+                }
+            />
+
             <MyHeader title="Delta" leftIonIcon="arrow-back" leftAction={() => navigation.goBack()}
                       leftColor={COLORS.SECONDARY} rightColor={COLORS.PRIMARY}/>
             <View style={{marginTop: 50, width: width / 2}}>

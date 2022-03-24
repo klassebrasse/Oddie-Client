@@ -7,10 +7,10 @@ import {useMyTheme} from "../../Context/MyThemeContext";
 const  {width, height} = Dimensions.get('screen')
 
 
-const ReceiverListRender = ({receiver, roomId,socket, sender, zips, senderUsername, status, oddId, receiverOdd, receiverGuess, senderGuess}) =>  {
+const ReceiverListRender = ({receiver, roomId,socket, sender, zips, senderUsername, status, oddId, receiverOdd, receiverGuess, senderGuess, date, hasSeen}) =>  {
     const {isDark, COLORS, toggleTheme} = useMyTheme();
     const [modalVisible, setModalVisible] = useState(false);
-    const [myOdds, setMyOdds] = useState(1);
+    const [myOdds, setMyOdds] = useState(2);
     const [myGuess, setMyGuess] = useState(1);
 
     useEffect(() => {
@@ -18,6 +18,9 @@ const ReceiverListRender = ({receiver, roomId,socket, sender, zips, senderUserna
     }, []);
 
     const StatusText = () =>{
+        if (status === 2 && hasSeen){
+            return <Text/>
+        }
         switch(status) {
             case 0:
                 return <Text>Du ska gissa</Text>
@@ -32,11 +35,30 @@ const ReceiverListRender = ({receiver, roomId,socket, sender, zips, senderUserna
         }
     }
 
+    function openModal() {
+        setModalVisible(true)
+        if ((status === 2) && (receiverGuess !== senderGuess)){
+            socket.emit('rec seen', oddId)
+        }
+    }
+
+    const statusIcon = () => {
+        if (status === 3){
+            return "checkmark"
+        }
+        else {
+            return "home"
+        }
+    }
+
     function oddsDone() {
         socket.emit('odd done', oddId)
     }
 
     function st(){
+        if (status === 2 && hasSeen){
+            return "#0d3f3f"
+        }
         switch(status) {
             case 0:
                 return COLORS.PRIMARY
@@ -91,17 +113,17 @@ const ReceiverListRender = ({receiver, roomId,socket, sender, zips, senderUserna
                         elevation: 5
                     }}>
 
-                        {status !== 2 ? (
+                        {status !== 2 && status !== 3 ? (
                             <>
                                 <Ionicons size={42} color="sandybrown" name="beer-outline"/>
                                 <Text style={{fontSize: 24, color: COLORS.CONTRAST, marginVertical: 20}}>{senderUsername} oddsade dig </Text>
-                                <Text style={{fontSize: 16, color: COLORS.CONTRAST}}>Vad är oddsen? 1-10</Text>
+                                <Text style={{fontSize: 16, color: COLORS.CONTRAST}}>Vad är oddsen? 2-10</Text>
                                 <Text style={{color: COLORS.PRIMARY, fontSize: 18}}>{myOdds}</Text>
                                 <Slider
                                     thumbStyle={{backgroundColor: COLORS.PRIMARY, width: 30, height: 30}}
                                     step={1}
                                     style={{width: width/1.5, height: 40}}
-                                    minimumValue={1}
+                                    minimumValue={2}
                                     maximumValue={10}
                                     minimumTrackTintColor={COLORS.PRIMARY}
                                     maximumTrackTintColor="#000000"
@@ -190,7 +212,7 @@ const ReceiverListRender = ({receiver, roomId,socket, sender, zips, senderUserna
                     </View>
                 </View>
             </Modal>
-            <TouchableOpacity disabled={status === 1 } onPress={() => setModalVisible(true)} style={{
+            <TouchableOpacity disabled={status === 1 } onPress={() => openModal()} style={{
                 width: width / 1.1,
                 marginHorizontal: 10,
                 padding: 8,
@@ -204,20 +226,27 @@ const ReceiverListRender = ({receiver, roomId,socket, sender, zips, senderUserna
                 maxHeight: height/16,
                 shadowOpacity: 0.25,
                 shadowRadius: 4,
-                elevation: 5
+                elevation: 5,
+
             }}>
 
                 <View style={{flex: 1, flexDirection: "row"}}>
-                    <Text style={{color: "black", fontSize: 20}}>Du oddsade </Text>
                     <Text style={{color: "black", fontSize: 20, fontWeight: "bold"}}>{receiver}</Text>
-                    <View style={{position: "absolute", right: width/8, alignSelf: "center", flexDirection: "row"}} >
+                    <Text style={{color: "black", fontSize: 20}}> oddsade dig</Text>
+                    <View style={{position: "absolute", right: 10, alignSelf: "center", flexDirection: "row"}} >
                         <Text style={{color: "black", fontSize: 16, fontWeight: "bold"}}>
                             {zips}x
                         </Text>
                         <Ionicons name="beer-outline" size={17}/>
+
+                        {status === 3 || hasSeen && (
+                            <Ionicons name={"checkmark"} size={22} style={{marginLeft: 5}}/>
+                        )}
+
                     </View>
                 </View>
                 <StatusText/>
+
 
             </TouchableOpacity>
         </View>

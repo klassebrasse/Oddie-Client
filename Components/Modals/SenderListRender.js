@@ -10,7 +10,7 @@ const  {width, height} = Dimensions.get('screen')
 const SenderListRender = ({receiver, roomId,socket, sender, zips, senderUsername, status, oddId, receiverGuess, receiverOdd, senderGuess}) =>  {
     const {isDark, COLORS, toggleTheme} = useMyTheme();
     const [modalVisible, setModalVisible] = useState(false);
-    const [myGuess, setMyGuess] = useState(0);
+    const [myGuess, setMyGuess] = useState(1);
 
     useEffect(() => {
 

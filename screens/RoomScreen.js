@@ -52,11 +52,9 @@ const RoomScreen = ({route, navigation}) => {
     }, []);
 
     function renderMyTimeouts(payload){
-        console.log("DETTA TRIGGAS. PAYLOAD: ")
         const myUserIndex = payload.findIndex((user => user.id === socket.id));
         const tempMyTimeout = (payload[myUserIndex]?.timeOuts)
         setMyTimeouts(tempMyTimeout);
-        console.log(myTimeouts)
     }
 
     function exitRoom() {
@@ -83,7 +81,6 @@ const RoomScreen = ({route, navigation}) => {
     };
 
     const refresh = () => {
-        console.log("refresh")
         socket.emit('update user list', roomId)
     }
 

@@ -111,7 +111,7 @@ const EventsScreen = ({route, navigation}) => {
                               data={receivedOdds}
                               renderItem={({item}) => <ReceiverListRender receiver={item.receiver} status={item.status} oddId={item.id} receiverOdd={item.receiverOdd}
                                                                           roomId={item.roomId} socket={socket} receiverGuess={item.receiverGuess} senderGuess={item.senderGuess}
-                                                                          sender={item.sender} senderUsername={item.senderUsername} zips={item.zips}/>}/>
+                                                                          sender={item.sender} senderUsername={item.senderUsername} zips={item.zips} date={item.date} hasSeen={item.receiverHasSeen}/>}/>
                 </TabView.Item>
                 <TabView.Item style={{width: '100%' }}>
                     <FlatList keyExtractor={keyExtractor}
