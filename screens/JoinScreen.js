@@ -21,6 +21,7 @@ const JoinScreen = ({navigation}) => {
     const [roomId, setRoomId] = useState(null);
     const [loading, setLoading] = useState(false)
 
+
     const customColor = randomColor({
         hue: '#00C1CB'
     });
